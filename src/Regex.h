@@ -12,7 +12,8 @@ typedef vector<std::string> Strings;
 
 class Regex
 {
-
+    Regex (void);
+    Regex (const char* string&, )
 };
 
 #endif

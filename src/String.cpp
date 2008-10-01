@@ -10,17 +10,17 @@ String::String (const char* string)
     _string = string;
 }
 
-String::String (std::string string)
+String::String (const std::string& string)
 {
     _string = string;
 }
 
-String::String (int number)
+String::String (const int number)
 {
     _string = String::toString(number);
 }
 
-String::String (double number)
+String::String (const double number)
 {
     _string = String::toString(number);
 }
@@ -38,30 +38,30 @@ String::append (const char* string)
 }
 
 void
-String::append (std::string string)
+String::append (const std::string& string)
 {
     _string += string;
 }
 
 void
-String::append (int number)
+String::append (const int number)
 {
     _string += String::toString(number);
 }
 
 void
-String::append (long number)
+String::append (const long number)
 {
     _string += String::toString(number);
 }
 
-void String::append (long long number)
+void String::append (const long long number)
 {
     _string += String::toString(number);
 }
 
 void
-String::append (double number)
+String::append (const double number)
 {
     _string += String::toString(number);
 }
@@ -91,7 +91,7 @@ String::toInt (const char* string)
 }
 
 int
-String::toInt (std::string string)
+String::toInt (const std::string& string)
 {
     return std::atoi(String::toChars(string));
 }
@@ -109,7 +109,7 @@ String::toLong (const char* string)
 }
 
 long
-String::toLong (std::string string)
+String::toLong (const std::string& string)
 {
     return std::atol(String::toChars(string));
 }
@@ -127,7 +127,7 @@ String::toLongLong (const char* string)
 }
 
 long long
-String::toLongLong (std::string string)
+String::toLongLong (const std::string& string)
 {
     return std::atoll(String::toChars(string));
 }
@@ -145,7 +145,7 @@ String::toDouble (const char* string)
 }
 
 double
-String::toDouble (std::string string)
+String::toDouble (const std::string& string)
 {
     return std::atof(string.c_str());
 }
@@ -157,31 +157,31 @@ String::toChars (void)
 }
 
 const char*
-String::toChars (std::string string)
+String::toChars (const std::string& string)
 {
     return string.c_str();
 }
 
 const char*
-String::toChars (int number)
+String::toChars (const int number)
 {
     return String::toChars(String::toString(number));
 }
 
 const char*
-String::toChars (long number)
+String::toChars (const long number)
 {
     return String::toChars(String::toString(number));
 }
 
 const char*
-String::toChars (long long number)
+String::toChars (const long long number)
 {
     return String::toChars(String::toString(number));
 }
 
 const char*
-String::toChars (double number)
+String::toChars (const double number)
 {
     return String::toChars(String::toString(number));
 }
@@ -199,7 +199,7 @@ String::toString (const char* string)
 }
 
 std::string
-String::toString (int number)
+String::toString (const int number)
 {
     std::stringstream string;
     string << number;
@@ -208,16 +208,7 @@ String::toString (int number)
 }
 
 std::string
-String::toString (long number)
-{
-    std::strinstream string;
-    string << number;
-
-    return srting.str();
-}
-
-std::string
-String::toString (long long number)
+String::toString (const long number)
 {
     std::stringstream string;
     string << number;
@@ -226,7 +217,16 @@ String::toString (long long number)
 }
 
 std::string
-String::toString (double number)
+String::toString (const long long number)
+{
+    std::stringstream string;
+    string << number;
+
+    return string.str();
+}
+
+std::string
+String::toString (const double number)
 {
     std::stringstream string;
     string << number;
@@ -347,7 +347,7 @@ String::operator + (double number)
 }
 
 std::ostream&
-operator << (std::ostream& out, nc::String string)
+operator << (std::ostream& out, String string)
 {
     out << string.toString();
     return out;

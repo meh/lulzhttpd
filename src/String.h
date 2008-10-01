@@ -12,39 +12,39 @@ class String
     String (void);
 
     String (const char* string);
-    String (std::string string);
+    String (const std::string& string);
     String (int number);
     String (double number);
 
     void append (String& string);
     void append (const char* string);
-    void append (std::string string);
-    void append (int number);
-    void append (long number);
-    void append (long long number);
-    void append (double number);
+    void append (const std::string& string);
+    void append (const int number);
+    void append (const long number);
+    void append (const long long number);
+    void append (const double number);
 
     int length (void);
     bool empty (void);
 
     int toInt (void);
     static int toInt (const char* string);
-    static int toInt (std::string string);
+    static int toInt (const std::string& string);
 
     long toLong (void);
     static long toLong (const char* string);
-    static long toLong (std::string string);
+    static long toLong (const std::string& string);
 
     long long toLongLong (void);
     static long long toLongLong (const char* string);
-    static long long toLongLong (std::string string);
+    static long long toLongLong (const std::string& string);
 
     double toDouble (void);
     static double toDouble (const char* string);
-    static double toDouble (std::string string);
+    static double toDouble (const std::string& string);
 
     const char* toChars (void);
-    static const char* toChars (std::string string);
+    static const char* toChars (const std::string& string);
     static const char* toChars (int number);
     static const char* toChars (long number);
     static const char* toChars (long long number);
@@ -52,10 +52,10 @@ class String
 
     std::string toString (void);
     std::string toString (const char* string);
-    static std::string toString (int number);
-    static std::string toString (long number);
-    static std::string toString (long long number);
-    static std::string toString (double number);
+    static std::string toString (const int number);
+    static std::string toString (const long number);
+    static std::string toString (const long long number);
+    static std::string toString (const double number);
 
     String operator += (String string);
     String operator += (const char* string);
@@ -78,8 +78,6 @@ class String
 
   protected:
     std::string _string;
-};
-
 };
 
 #endif
