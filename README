@@ -8,6 +8,9 @@ Server has objects: Config, PluginList.
 
 Object list:
 
+Regex - PCRE wrapper.
+String - Well, bettar string >:(
+
 Server - The main part of the program.
 Config - Parse the xml config files etc, use it like in lulzBB, Config::get(conf, domain) or something like that.
 Plugin - Loads the plugin from the file and sets the various stuff in it.
