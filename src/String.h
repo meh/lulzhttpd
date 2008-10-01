@@ -19,6 +19,10 @@ class String
     void append (String& string);
     void append (const char* string);
     void append (std::string string);
+    void append (int number);
+    void append (long number);
+    void append (long long number);
+    void append (double number);
 
     int length (void);
     bool empty (void);
@@ -54,12 +58,20 @@ class String
     static std::string toString (double number);
 
     String operator += (String string);
-    String operator += (std::string string);
     String operator += (const char* string);
+    String operator += (std::string string);
+    String operator += (int number);
+    String operator += (long number);
+    String operator += (long long number);
+    String operator += (double number);
 
     String operator + (String string);
-    String operator + (std::string string);
     String operator + (const char* string);
+    String operator + (std::string string);
+    String operator + (int number);
+    String operator + (long number);
+    String operator + (long long number);
+    String operator + (double number);
 
     friend std::ostream& operator << (std::ostream& out, String string);
     friend std::istream& operator >> (std::istream& in, String string);

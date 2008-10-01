@@ -32,15 +32,38 @@ String::append (String& string)
 }
 
 void
+String::append (const char* string)
+{
+    _string += string;
+}
+
+void
 String::append (std::string string)
 {
     _string += string;
 }
 
 void
-String::append (const char* string)
+String::append (int number)
 {
-    _string += string;
+    _string += String::toString(number);
+}
+
+void
+String::append (long number)
+{
+    _string += String::toString(number);
+}
+
+void String::append (long long number)
+{
+    _string += String::toString(number);
+}
+
+void
+String::append (double number)
+{
+    _string += String::toString(number);
 }
 
 bool
@@ -220,14 +243,6 @@ String::operator += (String string)
 }
 
 String
-String::operator += (std::string string)
-{
-    this->append(string);
-
-    return *this;
-}
-
-String
 String::operator += (const char* string)
 {
     this->append(string);
@@ -236,7 +251,55 @@ String::operator += (const char* string)
 }
 
 String
+String::operator += (std::string string)
+{
+    this->append(string);
+
+    return *this;
+}
+
+String
+String::operator += (int number)
+{
+    this->append(number);
+
+    return *this;
+}
+
+String
+String::operator += (long number)
+{
+    this->append(number);
+
+    return *this;
+}
+
+String
+String::operator += (long long number)
+{
+    this->append(number);
+
+    return *this;
+}
+
+String
+String::operator += (double number)
+{
+    this->append(number);
+
+    return *this;
+}
+
+String
 String::operator + (String string)
+{
+    this->append(string);
+
+    return *this;
+}
+
+String
+String::operator + (const char* string)
 {
     this->append(string);
 
@@ -252,9 +315,33 @@ String::operator + (std::string string)
 }
 
 String
-String::operator + (const char* string)
+String::operator + (int number)
 {
-    this->append(string);
+    this->append(number);
+
+    return *this;
+}
+
+String
+String::operator + (long number)
+{
+    this->append(number);
+
+    return *this;
+}
+
+String
+String::operator + (long long number)
+{
+    this->append(number);
+
+    return *this;
+}
+
+String
+String::operator + (double number)
+{
+    this->append(number);
 
     return *this;
 }
