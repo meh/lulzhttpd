@@ -6,6 +6,8 @@
 #include <sstream>
 #include <cstdlib>
 
+#include "Regex.h"
+
 class String
 {
   public:
@@ -72,6 +74,10 @@ class String
     String operator + (long number);
     String operator + (long long number);
     String operator + (double number);
+
+    int operator ^= (String& regex);
+    int operator ^= (const char* regex);
+    int operator ^= (const std::string& regex);
 
     friend std::ostream& operator << (std::ostream& out, String string);
     friend std::istream& operator >> (std::istream& in, String string);

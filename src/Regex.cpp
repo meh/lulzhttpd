@@ -1,5 +1,7 @@
 #include "Regex.h"
 
+std::vector<std::string> Regex::_globalGroups;
+
 Regex::Regex (void)
 {
     this->reset();
@@ -15,7 +17,7 @@ Regex::Regex (void)
 
 Regex::Regex (const char* regex)
 {
-    Regex re("^/(.*?)/(\w+)?$", PCRE_CASELESS | PCRE_EXTENDED);
+    Regex re("^/(.*?)/(\\w*)$", PCRE_CASELESS | PCRE_EXTENDED);
     re.match(regex);
 
     if (re.matches()) {
@@ -31,14 +33,14 @@ Regex::Regex (const char* regex)
 
 Regex::Regex (const std::string& regex)
 {
-    Regex re("^/(.*?)/(\w+)?$", PCRE_CASELESS | PCRE_EXTENDED);
+    Regex re("^/(.*?)/(\\w*)?$", PCRE_CASELESS | PCRE_EXTENDED);
     re.match(regex);
 
     if (re.matches()) {
         std::string nRegex = re[1];
         std::string opts   = re[2];
 
-        this->_init(nRegex, opts);
+        this->_init(nRegex.c_str(), opts.c_str());
     }
     else {
         throw std::exception();
@@ -47,26 +49,26 @@ Regex::Regex (const std::string& regex)
 
 Regex::Regex (const char* regex, unsigned int opts)
 {
-    this->_init(regex, opts);
+    this->_init((std::string) regex, opts);
 }
 
 Regex::Regex (const char* regex, const char* opts)
 {
-    this->_init(regex, opts);
+    this->_init((std::string) regex, (std::string) opts);
 }
 
 Regex::Regex (const std::string& regex, unsigned int opts)
 {
-    this->_init(regex.c_str(), opts);
+    this->_init(regex, opts);
 }
 
 Regex::Regex (const std::string& regex, const std::string& opts)
 {
-    this->_init(regex.c_str(), opts.c_str());
+    this->_init(regex, opts);
 }
 
 void
-Regex::_init (const char* regex, unsigned int opts)
+Regex::_init (const std::string& regex, unsigned int opts)
 {
     this->reset();
     _isGlobal = false;
@@ -80,7 +82,7 @@ Regex::_init (const char* regex, unsigned int opts)
 }
 
 void
-Regex::_init (const char* regex, const char* opts)
+Regex::_init (const std::string& regex, const std::string& opts)
 {
     this->reset();
     _isGlobal = false;
@@ -115,12 +117,28 @@ Regex::reset (void)
 void
 Regex::compile (const char* regex, unsigned int opts)
 {
-    _opts = opts;
+    this->compile((std::string) regex, opts);
+}
+
+void
+Regex::compile (const char* regex, const char* opts)
+{
+    _opts = _parseOptions((std::string) opts);
+
+    this->compile((std::string) regex);
+}
+
+void
+Regex::compile (const std::string& regex, unsigned int opts)
+{
+    if (opts != -1) {
+        _opts = opts;
+    }
 
     const char *error;
     int errorOffset;
 
-    _re = pcre_compile(regex, _opts, &error, &errorOffset, 0)
+    _re = pcre_compile(regex.c_str(), _opts, &error, &errorOffset, NULL);
 
     if (_re != NULL) {
         _isValid = true;
@@ -131,29 +149,127 @@ Regex::compile (const char* regex, unsigned int opts)
 }
 
 void
-Regex::compile (const char* regex, const char* opts)
+Regex::compile (const std::string& regex, const std::string& opts)
 {
     _opts = _parseOptions(opts);
 
     this->compile(regex);
 }
 
-void
-Regex::compile (const std::string& regex, unsigned int opts)
-{
-    this->compile(regex.c_str(), opts);
-}
-
-void
-Regex::compile (const std::string& regex, const std::string& opts)
-{
-    this->compile(regex.c_str(), opts.c_str());
-}
-
 int
 Regex::match (const char* string, unsigned int offset)
 {
+    return this->match((std::string) string, offset);
+}
 
+int
+Regex::match (const std::string& string, unsigned int offset)
+{
+    size_t msize = NULL;
+    pcre_fullinfo(_re, _extra, PCRE_INFO_CAPTURECOUNT, &msize);
+    int* m = new int[(msize = 3 * (msize + 1))];
+    int* p;
+
+    std::vector<Markers> marks;
+
+    if (_p_lastMatched != (void*) &string) {
+        _lastPosition = 0;
+    }
+
+    if (_isGlobal) {
+        offset += _lastPosition;
+    }
+    
+    _matchesNumber = pcre_exec(_re, _extra, string.c_str(), string.length(), offset, 0, m, msize);
+
+    int i;
+    for (i = 0, p = m; i < _matchesNumber; i++, p += 2) {
+        marks.push_back(Markers(p[0], p[1]));
+    }
+
+    delete[] m;
+
+    _marks         = marks;
+    _lastMatched   = string;
+    _p_lastMatched = (void*) &string;
+
+    if (_isGlobal) {
+        if (_matchesNumber == PCRE_ERROR_NOMATCH) {
+            _lastPosition = 0; // reset the position for next match (perl does this)
+        }
+        else if (_matchesNumber > 0) {
+            _lastPosition = marks.at(0).second; // increment by the end of the match
+        }
+        else {
+            _lastPosition = 0;
+        }
+    }
+
+    int rValue = 0;
+    if (_matchesNumber > 0) {
+        rValue = _matchesNumber;
+
+        size_t i;
+        for (i = 0; i < _marks.size(); i++) {
+            int begin = _marks.at(i).first;
+
+            if (begin == -1) {
+                _groups.push_back("");
+                continue;
+            }
+
+            int end = _marks.at(i).second;
+
+            _groups.push_back(string.substr(begin, end-begin));
+
+            _globalGroups.clear(); _globalGroups = _groups;
+        }
+    }
+
+    return rValue;
+}
+
+int
+Regex::match (const char* regex, const char* string)
+{
+    return Regex::match((std::string) regex, (std::string) string);
+}
+
+int
+Regex::match (const std::string& regex, const std::string& string)
+{
+    Regex re(regex);
+    return re.match(string);
+}
+
+int
+Regex::matches (void)
+{
+    return _matchesNumber;
+}
+
+std::string
+Regex::group (int index)
+{
+    return _groups.at(index);
+}
+
+std::string
+Regex::Group (int index)
+{
+    return _globalGroups.at(index);
+}
+
+bool
+Regex::isValid (void)
+{
+    return _isValid;
+}
+
+std::string
+Regex::operator [] (int index)
+{
+    return this->group(index);
 }
 
 unsigned int
@@ -185,7 +301,20 @@ Regex::_clonePCRE (pcre* re)
 
     pcre_fullinfo(re, 0, PCRE_INFO_SIZE, &size);
     newRe = (pcre*) new char[size];
-    memcpy(newRe, re, size);
+    std::memcpy(newRe, re, size);
 
     return newRe;
 }
+
+int
+operator ^= (std::string string, const char* regex)
+{
+    Regex::match((std::string) regex, string);
+}
+
+int
+operator ^= (std::string string, std::string regex)
+{
+    Regex::match(regex, string);
+}
+

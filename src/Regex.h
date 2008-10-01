@@ -1,14 +1,15 @@
 #if !defined(REGEXPP)
 #define REGEXPP
 
-#include "String.h"
+#include <iostream>
+
 #include <cstring>
-#include <sstream>
+#include <string>
 #include <vector>
 
 #include <pcre.h>
 
-typedef vector<std::string> Strings;
+typedef std::vector<std::string> Strings;
 
 class Regex
 {
@@ -36,19 +37,28 @@ class Regex
     void options (const char* opts);
     void options (const std::string& opts);
 
-    void compile (const char* regex, unsigned int opts = _opts);
-    void compile (const char* regex, const char* opts = "is");
+    void compile (const char* regex, unsigned int opts = -1);
+    void compile (const char* regex, const char* opts);
 
-    void compile (const std::string& regex, unsigned int opts = _opts);
+    void compile (const std::string& regex, unsigned int opts = -1);
     void compile (const std::string& regex, const std::string& opts);
 
     int match (const char* string, unsigned int offset = 0);
-    int match (const std::string& string, unsigned offset = 0);
+    int match (const std::string& string, unsigned int offset = 0);
 
     static int match (const char* regex, const char* string);
     static int match (const std::string& regex, const std::string& string);
 
+    int matches (void);
+
+    std::string group (int index);
+    static std::string Group (int index);
+
+    bool isValid (void);
+
     void reset (void);
+
+    std::string operator [] (int index);
 
   protected:
     pcre* _re;
@@ -68,14 +78,22 @@ class Regex
 
     bool _isValid;
 
+    std::vector<std::string> _groups;
+    static std::vector<std::string> _globalGroups;
+
   protected:
     static pcre* _clonePCRE (pcre* re);
 
     unsigned int _parseOptions (const std::string& opts);
 
   private:
-    void _init (const char* regex, unsigned int opts);
-    void _init (const char* regex, const char* opts);
+    void _init (const std::string& regex, unsigned int opts);
+    void _init (const std::string& regex, const std::string& opts);
 };
+
+int operator ^= (std::string string, const char* regex);
+int operator ^= (std::string string, std::string string);
+
+#define $(n) Regex::Group(n)
 
 #endif
