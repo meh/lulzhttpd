@@ -12,6 +12,9 @@ Server - The main part of the program.
 Config - Parse the xml config files etc, use it like in lulzBB, Config::get(conf, domain) or something like that.
 Plugin - Loads the plugin from the file and sets the various stuff in it.
 PluginList - A list with plugins etc.
-Socket - Well, i don't want defines here and there, so this is needed.
 HTTP - The object that does the http stuff.
+
+System namespace - System stuff, usual thing, i don't want defines here and there.
+System::Socket - Well, i don't want defines here and there, so this is needed.
+
 
