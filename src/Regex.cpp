@@ -114,6 +114,36 @@ Regex::reset (void)
     _isValid = false;
 }
 
+unsigned int
+Regex::options (void)
+{
+    return _opts;
+}
+
+bool
+Regex::isGlobal (void)
+{
+    return _isGlobal;
+}
+
+void
+Regex::options (unsigned int opts)
+{
+    _opts = opts;
+}
+
+void
+Regex::options (const char* opts)
+{
+    _opts = _parseOptions((std::string) opts);
+}
+
+void
+Regex::options (const std::string& opts)
+{
+    _opts = _parseOptions(opts);
+}
+
 void
 Regex::compile (const char* regex, unsigned int opts)
 {
@@ -180,6 +210,7 @@ Regex::match (const std::string& string, unsigned int offset)
         offset += _lastPosition;
     }
     
+    _groups.clear();
     _matchesNumber = pcre_exec(_re, _extra, string.c_str(), string.length(), offset, 0, m, msize);
 
     int i;
@@ -260,6 +291,58 @@ Regex::Group (int index)
     return _globalGroups.at(index);
 }
 
+std::string
+Regex::sub (const char* replace, const char* string, bool backref)
+{
+    return this->sub((std::string) replace, (std::string) string, backref);
+}
+
+std::string
+Regex::sub (const std::string& replace, const std::string& string, bool backref)
+{
+    std::stringstream stream;
+
+    if (_isGlobal) {
+        int lastMatch = 0;
+
+        while (this->match(string)) {
+            stream << string.substr(lastMatch, _marks.at(0).first - lastMatch);
+
+            std::string replacement = replace;
+
+            if (backref) {
+                replacement = _updateReplacement(replacement);
+            }
+
+            stream << replacement;
+
+            lastMatch = _marks.at(0).second;
+        }
+
+        stream << string.substr(lastMatch);
+    }
+    else {
+        int matchesNumber = this->match(string);
+
+        if (matchesNumber > 0) {
+            std::string replacement = replace;
+
+            if (backref) {
+                replacement = _updateReplacement(replacement);
+            }
+
+            stream << string.substr(0, _marks.at(0).first);
+            stream << replacement;
+            stream << string.substr(_marks.at(0).second);
+        }
+        else {
+            stream << string;
+        }
+    }
+
+    return stream.str();
+}
+
 bool
 Regex::isValid (void)
 {
@@ -306,15 +389,40 @@ Regex::_clonePCRE (pcre* re)
     return newRe;
 }
 
+std::string
+Regex::_updateReplacement (const std::string& replace)
+{
+    std::string replacement = replace;
+
+    Regex backrefs("\\$(\\d+)", "g");
+
+    int backrefsNumber;
+    while (backrefsNumber = backrefs.match(replace)) {
+        std::stringstream reText;
+        reText << "[$]" << backrefs[1];
+        Regex backrefsSub(reText.str());
+
+        replacement = backrefsSub.sub(replacement, (*this)[std::atoi(backrefs[1].c_str())], false);
+    }
+
+    return replacement;
+}
+
 int
 operator ^= (std::string string, const char* regex)
 {
-    Regex::match((std::string) regex, string);
+    return Regex::match((std::string) regex, string);
+}
+
+int
+operator ^= (const char* string, std::string regex)
+{
+    return Regex::match(regex, (std::string) string);
 }
 
 int
 operator ^= (std::string string, std::string regex)
 {
-    Regex::match(regex, string);
+    return Regex::match(regex, string);
 }
 
