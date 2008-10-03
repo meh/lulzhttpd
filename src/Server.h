@@ -7,7 +7,8 @@ namespace lulzHTTPd {
 
 class Server
 {
-
+  public:
+    Server (void) {};
 };
 
 };
