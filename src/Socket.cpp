@@ -39,7 +39,17 @@ Socket::bind (const String& addr, int port)
 void
 Socket::bind (in_addr_t addr, int port)
 {
-    
+    if (addr == INADDR_NONE) {
+        throw std::exception;
+    }
+
+    sockaddr local = __initAddr(addr);
+
+    if (::bind(_sd, &local, sizeof(local)) < 0) {
+        throw std::exception;
+    }
+
+    _bound = true;
 }
 
 in_addr_t
