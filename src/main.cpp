@@ -37,7 +37,7 @@ int main (int argc, char *argv[])
             break;
 
             case 'v':
-            std::cout << showVersion() << std::cout;
+            std::cout << showVersion() << std::endl;
             return 0;
             break;
 
