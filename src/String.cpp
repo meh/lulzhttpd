@@ -290,23 +290,6 @@ String::operator += (double number)
     return *this;
 }
 
-int
-String::operator ^= (String& regex)
-{
-    Regex::match(regex.toString(), _string);
-}
-
-int
-String::operator ^= (const char* regex)
-{
-    Regex::match((std::string) regex, _string);
-}
-
-int
-String::operator ^= (const std::string& regex)
-{
-    Regex::match(regex, _string);
-}
 
 String
 String::operator + (String string)
@@ -376,5 +359,20 @@ operator >> (std::istream& in, String string)
 {
     in >> string._string;
     return in;
+}
+
+int operator ^= (String string, String regex)
+{
+    Regex::Match(regex.toString(), string.toString());
+}
+
+int operator ^= (String string, const char* regex)
+{
+    Regex::Match((std::string) regex, string.toString());
+}
+
+int operator ^= (String string, std::string regex)
+{
+    Regex::Match(regex, string.toString());
 }
 

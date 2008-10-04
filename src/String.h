@@ -75,15 +75,15 @@ class String
     String operator + (long long number);
     String operator + (double number);
 
-    int operator ^= (String& regex);
-    int operator ^= (const char* regex);
-    int operator ^= (const std::string& regex);
-
     friend std::ostream& operator << (std::ostream& out, String string);
     friend std::istream& operator >> (std::istream& in, String string);
 
   protected:
     std::string _string;
 };
+
+int operator ^= (String string, String regex);
+int operator ^= (String string, const char* regex);
+int operator ^= (String string, const std::string regex);
 
 #endif

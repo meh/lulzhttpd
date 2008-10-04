@@ -2,15 +2,32 @@
 
 namespace System {
 
-Socket::Socket (int domain, int protocol)
+Socket::Socket (const String& address, int port, int maxConnections)
 {
-    _sd = ::socket(AF_INET, domain, protocol);
+    _sd = System::socket(AF_INET, SOCK_STREAM, 0);
 
     if (_sd < 0) {
-        throw std::exception();
+        throw Exception(Exception::SOCKET_CREATION);
     }
 
     _bound = false;
+
+    this->_bind(address, port);
+    this->_listen(maxConnections);
+}
+
+Socket::Socket (const Socket& socket)
+{
+    sockaddr remote;
+    socklen_t len = sizeof(remote);
+
+    _sd = System::accept(socket._sd, &remote, &len);
+
+    if (_sd < 0) {
+        throw Exception(Exception::SOCKET_ACCEPT);
+    }
+
+    _bound = true;
 }
 
 Socket::~Socket (void)
@@ -18,66 +35,154 @@ Socket::~Socket (void)
     this->close();
 }
 
-void
-Socket::bind (const char* addr, int port)
+Socket*
+Socket::accept (void)
 {
-    this->bind((String) addr, port);
+    return new Socket(*this);
 }
 
-void
-Socket::bind (const std::string& addr, int port)
+String
+Socket::recv (void)
 {
-    this->bind((String) addr, port);
-}
+    int n;
+    int length = RECV_BUFSIZ;
+    char* buffer = NULL;
+    
+    buffer = (char*) realloc(buffer, length+1);
 
-void
-Socket::bind (const String& addr, int port)
-{
-    this->bind(this->_toIPv4(addr), port);
-}
+    while ((n = read(_sd, buffer, RECV_BUFSIZ)) > 0) {
+        if (n < RECV_BUFSIZ) {
+            buffer[n] = '\0';
+            break;
+        }
 
-void
-Socket::bind (in_addr_t addr, int port)
-{
-    if (addr == INADDR_NONE) {
-        throw std::exception;
+        length += RECV_BUFSIZ;
+        buffer = (char*) realloc(buffer, length+1);
     }
 
-    sockaddr local = __initAddr(addr);
+    if (n == -1) {
+        throw Exception(Exception::SOCKET_READ);
+    }
 
-    if (::bind(_sd, &local, sizeof(local)) < 0) {
-        throw std::exception;
+    String nBuffer = buffer;
+    free(buffer);
+
+    return nBuffer;
+}
+
+int
+Socket::send (String string)
+{
+    int n;
+
+    n = write(_sd, string.toChars(), string.length());
+    if (n < 0) {
+        throw Exception(Exception::SOCKET_WRITE);
+    }
+
+    return n;
+}
+
+void
+Socket::close (void)
+{
+    if (::close(_sd) < 0 && errno != EBADF) {
+        throw Exception(Exception::SOCKET_CLOSE);
+    }
+
+    _bound = false;
+}
+
+Socket&
+Socket::operator << (const char* string)
+{
+    this->send(String(string));
+}
+
+Socket&
+Socket::operator << (const std::string& string)
+{
+    this->send(String(string));
+}
+
+Socket&
+Socket::operator << (const String& string)
+{
+    this->send(string);
+}
+
+Socket&
+Socket::operator >> (char* buffer)
+{
+    buffer = (char*) this->recv().toChars();
+}
+
+Socket&
+Socket::operator >> (std::string buffer)
+{
+    buffer = this->recv().toString();
+}
+
+Socket&
+Socket::operator >> (String buffer)
+{
+    buffer = this->recv();
+}
+
+void
+Socket::_bind (const String& addr, int port)
+{
+    in_addr_t nAddr = this->_toIPv4((String&) addr);
+
+    if (nAddr == INADDR_NONE) {
+        throw Exception(Exception::SOCKET_BIND);
+    }
+
+    sockaddr local = this->_initAddr(nAddr, port);
+
+    if (System::bind(_sd, &local, sizeof(local)) < 0) {
+        throw Exception(Exception::SOCKET_BIND);
     }
 
     _bound = true;
+
+}
+
+void
+Socket::_listen (int maxConnections)
+{
+    if (System::listen(_sd, maxConnections) < 0) {
+        throw Exception(Exception::SOCKET_LISTEN);
+    }
 }
 
 in_addr_t
-Socket::_toIPv4 (const String& addr)
+Socket::_toIPv4 (String& addr)
 {
     in_addr_t nAddr;
 
     if (this->_isValidIPv4(addr)) {
-        nAddr = ::inet_addr(addr.toChars());
+        nAddr = System::inet_addr(addr.toChars());
     }
     else {
-        hostent he;
-        he = ::gethostbyname(addr.toChars());
+        hostent *he;
+        he = System::gethostbyname(addr.toChars());
 
-        nAddr = ((in_addr)he->h_addr).s_addr;
-    }
-
-    if (nAddr == NULL) {
-        nAddr = INADDR_NONE;
+        if (he == NULL) {
+            nAddr = INADDR_NONE;
+        }
+        else {
+            nAddr = ((struct in_addr *) he->h_addr)->s_addr;
+        }
     }
 
     return nAddr;
 }
 
 bool
-Socket::_isValidIPv4 (const String& addr)
+Socket::_isValidIPv4 (String& addr)
 {
-    Regex ip("/^((\\d+)\.){3}(\\d+)$/");
+    Regex ip("/^((\\d+)\\.){3}(\\d+)$/");
 
     if (ip.match(addr.toString())) {
         for (int i = 0; i < 4; i++) {
@@ -93,16 +198,16 @@ Socket::_isValidIPv4 (const String& addr)
     return true;
 }
 
-sockaddr
-Soket::_initAddr (in_addr_t addr, int port)
+struct sockaddr
+Socket::_initAddr (in_addr_t addr, int port)
 {
     sockaddr_in nAddr;
 
     nAddr.sin_family      = AF_INET;
-    nAddr.sin_port        = ::htons(port);
+    nAddr.sin_port        = System::htons(port);
     nAddr.sin_addr.s_addr = addr;
 
-    return (sockaddr*) &nAddr;
+    return *(struct sockaddr*) &nAddr;
 }
 
 };

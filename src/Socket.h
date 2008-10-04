@@ -1,36 +1,56 @@
 #if !defined(LULZHTTPD_SOCKET_H)
 #define LULZHTTPD_SOCKET_H
 
+#include "common.h"
+
 namespace System {
 
+#include <netinet/in.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <fcntl.h>
+#include <errno.h>
 
 class Socket
 {
   public:
-    static int RECV_BUFSIZE = 1024;
+    static const int RECV_BUFSIZ = 1024;
 
   public:
-    Socket (int domain, int protocol = 0);
+    Socket (const String& address, int port, int maxConnections);
+    Socket (const Socket& socket);
 
-    void bind (const char* addr, int port);
-    void bind (const std::string& addr, int port);
-    void bind (const String& addr, int port);
+    ~Socket (void);
 
-    void bind (in_addr_t addr, int port);
+    Socket* accept (void);
 
-    void listen (int maxConnections);
+    String recv (void);
+    int send (String string);
+
+    void close (void);
+
+    Socket& operator << (const char* string);
+    Socket& operator << (const std::string& string);
+    Socket& operator << (const String& string);
+
+    Socket& operator >> (char* buffer);
+    Socket& operator >> (std::string buffer);
+    Socket& operator >> (String buffer);
 
   private:
     int _sd;
     bool _bound;
 
   private:
-    in_addr_t _toIPv4 (const String& addr);
-    bool _isValidIPv4 (const String& addr);
+    void _bind (const String& addr, int port);
+
+    void _listen (int maxConnections);
+
+    in_addr_t _toIPv4 (String& addr);
+    bool _isValidIPv4 (String& addr);
+    struct sockaddr _initAddr (in_addr_t addr, int port);
 };
 
 };
