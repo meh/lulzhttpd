@@ -17,7 +17,7 @@ class Server
 
   private:
     static Server* _object;
-    static bool _initied;
+    static bool _inited;
 };
 
 };

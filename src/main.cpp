@@ -4,17 +4,40 @@
 #include <getopt.h>
 
 #include "Server.h"
+#include "Config.h"
 
-static std::string showHelp(void);
+static std::string showHelp (void);
+static std::string showVersion (void);
 
 int main (int argc, char *argv[])
 {
-    int cmd;
+    bool daemonize = true;
 
+    bool testConfig   = false;
+    String configFile = "/etc/lulzhttpd/lulz.conf";
+
+    int cmd;
     while ((cmd = getopt(argc, argv, "f:m:hvVDpt")) != -1) {
         switch (cmd) {
             case 'h':
             std::cout << showHelp() << std::endl;
+            return 0;
+            break;
+
+            case 'f':
+            configFile = optarg;
+            break;
+
+            case 't':
+            testConfig = false;
+            break;
+
+            case 'D':
+            daemonize = false;
+            break;
+
+            case 'v':
+            std::cout << showVersion() << std::cout;
             return 0;
             break;
 
@@ -23,6 +46,13 @@ int main (int argc, char *argv[])
             return -1;
             break;
         }
+    }
+
+    if (testConfig) {
+        Config::test(configFile);
+        std::cout << Config::testLog() << std::endl;
+
+        return 0;
     }
 
     return 0;
@@ -45,4 +75,13 @@ std::string showHelp (void)
     help << "  -h         show this help"                                          << std::endl;
 
     return help.str();
+}
+
+std::string showVersion (void)
+{
+    std::stringstream version;
+
+    version << "THE GAME" << std::endl;
+
+    return version.str();
 }
