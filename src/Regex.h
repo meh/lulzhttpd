@@ -92,11 +92,8 @@ class Regex
     Regex (void);
     Regex (const char* regex);
     Regex (const std::string& regex);
-    Regex (const char* regex, unsigned int opts);
-    Regex (const char* regex, const char* opts);
     Regex (const std::string& regex, unsigned int opts);
     Regex (const std::string& regex, const std::string& opts);
-    Regex (const Regex& re) {};
     
     ~Regex (void);
 
@@ -105,18 +102,13 @@ class Regex
     bool isGlobal (void);
 
     void options (unsigned int opts);
-    void options (const char* opts);
     void options (const std::string& opts);
     
-    void compile (const char* regex, unsigned int opts = -1);
-    void compile (const char* regex, const char* opts);
     void compile (const std::string& regex, unsigned int opts = -1);
     void compile (const std::string& regex, const std::string& opts);
     
-    int match (const char* string, unsigned int offset = 0);
     int match (const std::string& string, unsigned int offset = 0);
     
-    static int Match (const char* regex, const char* string);
     static int Match (const std::string& regex, const std::string& string);
     
     int matches (void);
@@ -125,10 +117,8 @@ class Regex
     
     static std::string Group (int index);
     
-    std::string sub (const char* replace, const char* string, bool backref = true);
     std::string sub (const std::string& replace, const std::string& string, bool backref = true);
     
-    static std::string Sub (const char* sub, const char* string);
     static std::string Sub (const std::string& sub, const std::string& string);
     
     bool isValid (void);

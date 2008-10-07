@@ -12,14 +12,12 @@ class String
 {
   public:
     String (void);
-
     String (const char* string);
     String (const std::string& string);
     String (int number);
     String (double number);
 
     void append (String& string);
-    void append (const char* string);
     void append (const std::string& string);
     void append (const int number);
     void append (const long number);
@@ -30,19 +28,15 @@ class String
     bool empty (void);
 
     int toInt (void);
-    static int toInt (const char* string);
     static int toInt (const std::string& string);
 
     long toLong (void);
-    static long toLong (const char* string);
     static long toLong (const std::string& string);
 
     long long toLongLong (void);
-    static long long toLongLong (const char* string);
     static long long toLongLong (const std::string& string);
 
     double toDouble (void);
-    static double toDouble (const char* string);
     static double toDouble (const std::string& string);
 
     const char* toChars (void);
@@ -84,6 +78,6 @@ class String
 
 int operator ^= (String string, String regex);
 int operator ^= (String string, const char* regex);
-int operator ^= (String string, const std::string regex);
+int operator ^= (String string, const std::string& regex);
 
 #endif

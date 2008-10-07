@@ -18,6 +18,8 @@ class Config
   private:
     Config* _object;
     bool _inited;
+
+    static String _t_log;
 };
 
 #endif

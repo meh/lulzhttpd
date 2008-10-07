@@ -47,16 +47,6 @@ Regex::Regex (const std::string& regex)
     }
 }
 
-Regex::Regex (const char* regex, unsigned int opts)
-{
-    this->_init((std::string) regex, opts);
-}
-
-Regex::Regex (const char* regex, const char* opts)
-{
-    this->_init((std::string) regex, (std::string) opts);
-}
-
 Regex::Regex (const std::string& regex, unsigned int opts)
 {
     this->_init(regex, opts);
@@ -133,29 +123,9 @@ Regex::options (unsigned int opts)
 }
 
 void
-Regex::options (const char* opts)
-{
-    _opts = _parseOptions((std::string) opts);
-}
-
-void
 Regex::options (const std::string& opts)
 {
     _opts = _parseOptions(opts);
-}
-
-void
-Regex::compile (const char* regex, unsigned int opts)
-{
-    this->compile((std::string) regex, opts);
-}
-
-void
-Regex::compile (const char* regex, const char* opts)
-{
-    _opts = _parseOptions((std::string) opts);
-
-    this->compile((std::string) regex);
 }
 
 void
@@ -184,12 +154,6 @@ Regex::compile (const std::string& regex, const std::string& opts)
     _opts = _parseOptions(opts);
 
     this->compile(regex);
-}
-
-int
-Regex::match (const char* string, unsigned int offset)
-{
-    return this->match((std::string) string, offset);
 }
 
 int
@@ -261,12 +225,6 @@ Regex::match (const std::string& string, unsigned int offset)
 }
 
 int
-Regex::Match (const char* regex, const char* string)
-{
-    return Regex::Match((std::string) regex, (std::string) string);
-}
-
-int
 Regex::Match (const std::string& regex, const std::string& string)
 {
     Regex re(regex);
@@ -289,12 +247,6 @@ std::string
 Regex::Group (int index)
 {
     return _globalGroups.at(index);
-}
-
-std::string
-Regex::sub (const char* replace, const char* string, bool backref)
-{
-    return this->sub((std::string) replace, (std::string) string, backref);
 }
 
 std::string
@@ -343,12 +295,6 @@ Regex::sub (const std::string& replace, const std::string& string, bool backref)
     return stream.str();
 }
 
-std::string
-Regex::Sub (const char* sub, const char* string)
-{
-    return Regex::Sub((std::string) sub, (std::string) string);
-};
-    
 std::string
 Regex::Sub (const std::string& sub, const std::string& string)
 {

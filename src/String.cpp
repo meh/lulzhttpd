@@ -32,12 +32,6 @@ String::append (String& string)
 }
 
 void
-String::append (const char* string)
-{
-    _string += string;
-}
-
-void
 String::append (const std::string& string)
 {
     _string += string;
@@ -85,12 +79,6 @@ String::toInt (void)
 }
 
 int
-String::toInt (const char* string)
-{
-    return std::atoi(string);
-}
-
-int
 String::toInt (const std::string& string)
 {
     return std::atoi(String::toChars(string));
@@ -100,12 +88,6 @@ long
 String::toLong (void)
 {
     return std::atol(_string.c_str());
-}
-
-long
-String::toLong (const char* string)
-{
-    return std::atol(string);
 }
 
 long
@@ -121,12 +103,6 @@ String::toLongLong (void)
 }
 
 long long
-String::toLongLong (const char* string)
-{
-    return std::atoll(string);
-}
-
-long long
 String::toLongLong (const std::string& string)
 {
     return std::atoll(String::toChars(string));
@@ -136,12 +112,6 @@ double
 String::toDouble (void)
 {
     return std::atof(String::toChars(_string));
-}
-
-double
-String::toDouble (const char* string)
-{
-    return std::atof(string);
 }
 
 double
@@ -193,12 +163,6 @@ String::toString (void)
 }
 
 std::string
-String::toString (const char* string)
-{
-    return (std::string) string;
-}
-
-std::string
 String::toString (const int number)
 {
     std::stringstream string;
@@ -246,8 +210,6 @@ String
 String::operator += (const char* string)
 {
     this->append(string);
-
-    return *this;
 }
 
 String
@@ -368,7 +330,7 @@ int operator ^= (String string, String regex)
 
 int operator ^= (String string, const char* regex)
 {
-    Regex::Match((std::string) regex, string.toString());
+    Regex::Match(regex, string.toString());
 }
 
 int operator ^= (String string, std::string regex)

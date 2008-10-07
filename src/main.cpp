@@ -16,6 +16,8 @@ int main (int argc, char *argv[])
     bool testConfig   = false;
     String configFile = "/etc/lulzhttpd/lulz.conf";
 
+    Regex lol("LOLWUT", "");
+
     int cmd;
     while ((cmd = getopt(argc, argv, "f:m:hvVDpt")) != -1) {
         switch (cmd) {
