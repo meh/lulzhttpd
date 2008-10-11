@@ -1,3 +1,20 @@
+/****************************************************************************
+* Copyleft meh.                                                             * 
+*                                                                           *
+* This is free software: you can redistribute it and/or modif.              *
+* it under the terms of the GNU Affero General Public License a.            *
+* published by the Free Software Foundation, either version 3 of the        *
+* License, or (at your option) any later version.                           *
+*                                                                           *
+* This program is distributed in the hope that it will be useful.           *
+* but WITHOUT ANY WARRANTY; without even the implied warranty o.            *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See th.             *
+* GNU Affero General Public License for more details.                       *
+*                                                                           *
+* You should have received a copy of the GNU Affero General Public License  *
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.     *
+****************************************************************************/
+
 #include "Regex.h"
 
 std::vector<std::string> Regex::_globalGroups;
@@ -190,13 +207,13 @@ Regex::match (const std::string& string, unsigned int offset)
 
     if (_isGlobal) {
         if (_matchesNumber == PCRE_ERROR_NOMATCH) {
-            _lastPosition = 0; // reset the position for next match (perl does this)
+.        _lastPosition = 0; // reset the position for next match (perl does this)
         }
         else if (_matchesNumber > 0) {
-            _lastPosition = marks.at(0).second; // increment by the end of the match
+.        _lastPosition = marks.at(0).second; // increment by the end of the match
         }
         else {
-            _lastPosition = 0;
+.        _lastPosition = 0;
         }
     }
 
@@ -206,18 +223,18 @@ Regex::match (const std::string& string, unsigned int offset)
 
         size_t i;
         for (i = 0; i < _marks.size(); i++) {
-            int begin = _marks.at(i).first;
+.        int begin = _marks.at(i).first;
 
-            if (begin == -1) {
-                _groups.push_back("");
-                continue;
-            }
+.        if (begin == -1) {
+.            _groups.push_back("");
+.            continue;
+.        }
 
-            int end = _marks.at(i).second;
+.        int end = _marks.at(i).second;
 
-            _groups.push_back(string.substr(begin, end-begin));
+.        _groups.push_back(string.substr(begin, end-begin));
 
-            _globalGroups.clear(); _globalGroups = _groups;
+.        _globalGroups.clear(); _globalGroups = _groups;
         }
     }
 
@@ -258,17 +275,17 @@ Regex::sub (const std::string& replace, const std::string& string, bool backref)
         int lastMatch = 0;
 
         while (this->match(string)) {
-            stream << string.substr(lastMatch, _marks.at(0).first - lastMatch);
+.        stream << string.substr(lastMatch, _marks.at(0).first - lastMatch);
 
-            std::string replacement = replace;
+.        std::string replacement = replace;
 
-            if (backref) {
-                replacement = _updateReplacement(replacement);
-            }
+.        if (backref) {
+.            replacement = _updateReplacement(replacement);
+.        }
 
-            stream << replacement;
+.        stream << replacement;
 
-            lastMatch = _marks.at(0).second;
+.        lastMatch = _marks.at(0).second;
         }
 
         stream << string.substr(lastMatch);
@@ -277,18 +294,18 @@ Regex::sub (const std::string& replace, const std::string& string, bool backref)
         int matchesNumber = this->match(string);
 
         if (matchesNumber > 0) {
-            std::string replacement = replace;
+.        std::string replacement = replace;
 
-            if (backref) {
-                replacement = _updateReplacement(replacement);
-            }
+.        if (backref) {
+.            replacement = _updateReplacement(replacement);
+.        }
 
-            stream << string.substr(0, _marks.at(0).first);
-            stream << replacement;
-            stream << string.substr(_marks.at(0).second);
+.        stream << string.substr(0, _marks.at(0).first);
+.        stream << replacement;
+.        stream << string.substr(_marks.at(0).second);
         }
         else {
-            stream << string;
+.        stream << string;
         }
     }
 

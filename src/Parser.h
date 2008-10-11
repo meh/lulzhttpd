@@ -16,45 +16,11 @@
 * along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
 ****************************************************************************/
 
-#include "Config.h"
+#if !defined(LULZHTTPD_PARSER_H)
+#define LULZHTTPD_PARSER_H
 
-namespace lulzHTTPd {
+#include <xml++/xml++.h>
+using namespace xmlpp;
 
-bool Config::_inited;
-String Config::_t_log;
-
-void
-Config::init (String& configFile) throw()
-{
-    if (!_inited) {
-        _inited = true;
-
-/*        if (Config::test(configFile)) {
-.        Config::load(Parser::load(configFile));
-        }
-        else {
-.        throw Exception(Exception::CONFIG_PARSE_ERROR);
-        }
-*/    }
-}
-
-void
-Config::load (DOM::Document* config)
-{
-    
-}
-
-bool
-Config::test (String& configFile)
-{
-    return false;
-}
-
-String
-Config::testLog (void)
-{
-    return _t_log;
-}
-
-};
+#endif
 

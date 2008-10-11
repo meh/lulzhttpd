@@ -1,7 +1,8 @@
 C++  = g++ ;
 LINK = $(C++) ;
 
-Main LOLd : src/main.cpp src/Regex.cpp src/String.cpp src/Config.cpp src/Exception.cpp ;
+Main LOLd : src/main.cpp src/Server.cpp src/Config.cpp
+            src/Regex.cpp src/String.cpp src/Exception.cpp ;
 
 LINKLIBS on LOLd = -lpcre ;
 

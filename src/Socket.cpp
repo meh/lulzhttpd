@@ -1,10 +1,31 @@
+/****************************************************************************
+* This file is part of lulzHTTPd.                                           *
+* Copyleft meh.                                                             *
+*                                                                           *
+* lulzHTTPd is free software: you can redistribute it and/or modify         *
+* it under the terms of the GNU General Public License as published by      *
+* the Free Software Foundation, either version 3 of the License, or         *
+* (at your option) any later version.                                       *
+*                                                                           *
+* lulzHTTPd is distributed in the hope that it will be useful.              *
+* but WITHOUT ANY WARRANTY; without even the implied warranty o.            *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See th.             *
+* GNU General Public License for more details.                              *
+*                                                                           *
+* You should have received a copy of the GNU General Public License         *
+* along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
+****************************************************************************/
+
 #include "Socket.h"
 
 namespace System {
 
 Socket::Socket (const String& address, int port, int maxConnections)
 {
+    _reuse;
+
     _sd = System::socket(AF_INET, SOCK_STREAM, 0);
+    setsockopt(_sd, SOL_SOCKET, SO_REUSEADDR, &_reuse, sizeof(_reuse));
 
     if (_sd < 0) {
         throw Exception(Exception::SOCKET_CREATION);
@@ -14,6 +35,8 @@ Socket::Socket (const String& address, int port, int maxConnections)
 
     this->_bind(address, port);
     this->_listen(maxConnections);
+
+
 }
 
 Socket::Socket (const Socket& socket)
@@ -52,8 +75,8 @@ Socket::recv (void)
 
     while ((n = read(_sd, buffer, RECV_BUFSIZ)) > 0) {
         if (n < RECV_BUFSIZ) {
-            buffer[n] = '\0';
-            break;
+.        buffer[n] = '\0';
+.        break;
         }
 
         length += RECV_BUFSIZ;
@@ -156,6 +179,14 @@ Socket::_listen (int maxConnections)
     }
 }
 
+void
+Socket::_setNonBlocking (void)
+{
+    if (fcntl(_sd, F_SETFL, (fcntl(_sd, F_GETFL) | O_NONBLOCK)) < 0) {
+        throw Exception(Exception::SOCKET_ERROR_SET_NON_BLOCKING);
+    }
+}
+
 in_addr_t
 Socket::_toIPv4 (String& addr)
 {
@@ -169,10 +200,10 @@ Socket::_toIPv4 (String& addr)
         he = System::gethostbyname(addr.toChars());
 
         if (he == NULL) {
-            nAddr = INADDR_NONE;
+.        nAddr = INADDR_NONE;
         }
         else {
-            nAddr = ((struct in_addr *) he->h_addr)->s_addr;
+.        nAddr = ((struct in_addr *) he->h_addr)->s_addr;
         }
     }
 
@@ -186,9 +217,9 @@ Socket::_isValidIPv4 (String& addr)
 
     if (ip.match(addr.toString())) {
         for (int i = 0; i < 4; i++) {
-            if (String(ip.group(i+1)).toInt() > 255) {
-                return false;
-            }
+.        if (String(ip.group(i+1)).toInt() > 255) {
+.            return false;
+.        }
         }
     }
     else {

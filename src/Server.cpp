@@ -16,44 +16,29 @@
 * along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
 ****************************************************************************/
 
-#include "Config.h"
+#include "Server.h"
 
 namespace lulzHTTPd {
 
-bool Config::_inited;
-String Config::_t_log;
+bool Server::_inited;
+int Server::_highestSocket;
 
 void
-Config::init (String& configFile) throw()
+Server::init (String& config)
 {
     if (!_inited) {
         _inited = true;
 
-/*        if (Config::test(configFile)) {
-.        Config::load(Parser::load(configFile));
-        }
-        else {
-.        throw Exception(Exception::CONFIG_PARSE_ERROR);
-        }
-*/    }
+        Config::init(config);
+    }
 }
 
 void
-Config::load (DOM::Document* config)
+Server::start (void)
 {
-    
-}
-
-bool
-Config::test (String& configFile)
-{
-    return false;
-}
-
-String
-Config::testLog (void)
-{
-    return _t_log;
+    if (!_inited) {
+        throw Exception(Exception::SERVER_NOT_INITED);
+    }
 }
 
 };

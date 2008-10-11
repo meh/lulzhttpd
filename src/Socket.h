@@ -1,3 +1,21 @@
+/****************************************************************************
+* This file is part of lulzHTTPd.                                           *
+* Copyleft meh.                                                             *
+*                                                                           *
+* lulzHTTPd is free software: you can redistribute it and/or modify         *
+* it under the terms of the GNU General Public License as published by      *
+* the Free Software Foundation, either version 3 of the License, or         *
+* (at your option) any later version.                                       *
+*                                                                           *
+* lulzHTTPd is distributed in the hope that it will be useful.              *
+* but WITHOUT ANY WARRANTY; without even the implied warranty o.            *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See th.             *
+* GNU General Public License for more details.                              *
+*                                                                           *
+* You should have received a copy of the GNU General Public License         *
+* along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
+****************************************************************************/
+
 #if !defined(LULZHTTPD_SOCKET_H)
 #define LULZHTTPD_SOCKET_H
 
@@ -31,6 +49,7 @@ class Socket
 
     void close (void);
 
+  public:
     Socket& operator << (const char* string);
     Socket& operator << (const std::string& string);
     Socket& operator << (const String& string);
@@ -43,10 +62,12 @@ class Socket
     int _sd;
     bool _bound;
 
+    int _reuse;
+
   private:
     void _bind (const String& addr, int port);
-
     void _listen (int maxConnections);
+    void _setNonBlocking (void);
 
     in_addr_t _toIPv4 (String& addr);
     bool _isValidIPv4 (String& addr);

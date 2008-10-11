@@ -1,3 +1,21 @@
+/****************************************************************************
+* This file is part of lulzHTTPd.                                           *
+* Copyleft meh.                                                             *
+*                                                                           *
+* lulzHTTPd is free software: you can redistribute it and/or modify         *
+* it under the terms of the GNU General Public License as published by      *
+* the Free Software Foundation, either version 3 of the License, or         *
+* (at your option) any later version.                                       *
+*                                                                           *
+* lulzHTTPd is distributed in the hope that it will be useful.              *
+* but WITHOUT ANY WARRANTY; without even the implied warranty o.            *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See th.             *
+* GNU General Public License for more details.                              *
+*                                                                           *
+* You should have received a copy of the GNU General Public License         *
+* along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
+****************************************************************************/
+
 #include "Exception.h"
 
 Exception::Exception (int code)
@@ -30,11 +48,23 @@ Exception::Exception (int code)
         case SOCKET_CLOSE:
         _description = "close() failed.";
         break;
+
+        case SOCKET_ERROR_SET_NON_BLOCKING:
+        _description = "Couldn't set the socket to non blocking.";
+        break;
+
+        default:
+        _description = "Well, you did it wrong.";
+        break;
     }
 }
 
+Exception::~Exception (void) throw()
+{
+}
+
 const char*
-Exception::getMessage() throw()
+Exception::what (void) throw()
 {
     return _description.toChars();
 }
