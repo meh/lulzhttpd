@@ -34,12 +34,12 @@ Regex::Regex (void)
 
 Regex::Regex (const char* regex)
 {
-    Regex re("^/(.*?)/(\\w*)$", PCRE_CASELESS | PCRE_EXTENDED);
+    Regex re("^/(.*?)/(\\w*)$", "ix");
     re.match(regex);
 
     if (re.matches()) {
-        std::string nRegex = re[1];
-        std::string opts   = re[2];
+        std::string nRegex = re.group(1);
+        std::string opts   = re.group(2);
 
         this->_init(nRegex.c_str(), opts.c_str());
     }
@@ -50,12 +50,12 @@ Regex::Regex (const char* regex)
 
 Regex::Regex (const std::string& regex)
 {
-    Regex re("^/(.*?)/(\\w*)?$", PCRE_CASELESS | PCRE_EXTENDED);
+    Regex re("^/(.*?)/(\\w*)?$", "ix");
     re.match(regex);
 
     if (re.matches()) {
-        std::string nRegex = re[1];
-        std::string opts   = re[2];
+        std::string nRegex = re.group(1);
+        std::string opts   = re.group(2);
 
         this->_init(nRegex.c_str(), opts.c_str());
     }
@@ -148,6 +148,7 @@ Regex::options (const std::string& opts)
 void
 Regex::compile (const std::string& regex, unsigned int opts)
 {
+    _regex = regex;
     if (opts != -1) {
         _opts = opts;
     }
@@ -319,7 +320,30 @@ Regex::Sub (const std::string& sub, const std::string& string)
     Regex re(data["regex"]);
 
     return re.sub(data["replace"], string, true);
-};
+}
+
+Strings
+Regex::split (const std::string& string)
+{
+    Strings splitted;
+
+    Regex re("/(.*?)"+_regex+"/xgms");
+    while (re.match(string)) {
+        splitted.push_back(re.group(1));
+    }
+    re.compile("("+_regex+".*?)*"+_regex+"(.*)", "xms");
+    re.match(string);
+    splitted.push_back(re.group(2));
+
+    return splitted;
+}
+
+Strings
+Regex::Split (const std::string& regex, const std::string& string)
+{
+    Regex re(regex);
+    return re.split(string);
+}
 
 bool
 Regex::isValid (void)

@@ -25,9 +25,20 @@ Client::Client (System::Socket* socket)
     _socket = socket;
 }
 
+Client::~Client (void)
+{
+    delete _socket;
+}
+
 void
 Client::start (void)
 {
+    String lol;
+
+    lol = _socket->recv();
+    std::cerr << lol << std::endl;
+    _socket->send("NO U\n");
+    std::cerr << "sent" << std::endl;
 }
 
 };

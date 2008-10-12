@@ -54,6 +54,8 @@ class Socket
     void close (void);
 
   public:
+    operator int (void);
+
     Socket& operator << (const char* string);
     Socket& operator << (const std::string& string);
     Socket& operator << (const String& string);
@@ -61,8 +63,6 @@ class Socket
     Socket& operator >> (char* buffer);
     Socket& operator >> (std::string buffer);
     Socket& operator >> (String buffer);
-
-    operator int (void);
 
   private:
     int _sd;

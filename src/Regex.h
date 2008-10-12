@@ -82,12 +82,11 @@
 
 #define $(n) Regex::Group(n)
 
+typedef std::pair<int, int> Markers;
+typedef std::vector<std::string> Strings;
+
 class Regex
 {
-  public:
-    typedef std::pair<int, int> Markers;
-    typedef std::vector<std::string> Strings;
-
   public:
     Regex (void);
     Regex (const char* regex);
@@ -108,18 +107,18 @@ class Regex
     void compile (const std::string& regex, const std::string& opts);
     
     int match (const std::string& string, unsigned int offset = 0);
-    
     static int Match (const std::string& regex, const std::string& string);
     
     int matches (void);
 
     std::string group (int index);
-    
     static std::string Group (int index);
     
     std::string sub (const std::string& replace, const std::string& string, bool backref = true);
-    
     static std::string Sub (const std::string& sub, const std::string& string);
+
+    Strings split (const std::string& string);
+    static Strings Split (const std::string& regex, const std::string& string);
     
     bool isValid (void);
     
@@ -128,6 +127,8 @@ class Regex
     std::string operator [] (int index);
     
   protected:
+    std::string _regex;
+
     pcre* _re;
     pcre_extra* _extra;
 
@@ -161,6 +162,8 @@ class Regex
     void _init (const std::string& regex, unsigned int opts);
     void _init (const std::string& regex, const std::string& opts);
 };
+
+
 
 /// Match
 int operator ^= (std::string string, const char* regex);

@@ -41,6 +41,7 @@ class String
     void append (const long long number);
     void append (const double number);
 
+    String substr (int offset, int end = -1);
     int length (void);
     bool empty (void);
 

@@ -19,6 +19,8 @@
 #if !defined(LULZHTTPD_COMMON_H)
 #define LULZHTTPD_COMMON_H
 
+#include <iostream>
+
 #include "String.h"
 #include "Regex.h"
 

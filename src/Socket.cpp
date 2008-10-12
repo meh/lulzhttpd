@@ -94,11 +94,12 @@ Socket::recv (void)
 int
 Socket::send (String string)
 {
-    int n;
+    int n = 0;
 
-    n = write(_sd, string.toChars(), string.length());
-    if (n < 0) {
-        throw Exception(Exception::SOCKET_WRITE);
+    while ((n = write(_sd, string.substr(n).toChars(), string.length())) < string.length()) {
+        if (n < 0) {
+            throw Exception(Exception::SOCKET_WRITE);
+        }
     }
 
     return n;

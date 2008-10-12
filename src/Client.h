@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "Socket.h"
+#include "HTTP.h"
 
 namespace lulzHTTPd {
 
@@ -28,6 +29,8 @@ class Client
 {
   public:
     Client (System::Socket* sock);
+    ~Client (void);
+
     void start (void);
 
   private:

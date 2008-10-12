@@ -77,16 +77,27 @@ String::append (const double number)
     _string += String::toString(number);
 }
 
-bool
-String::empty (void)
+String
+String::substr (int offset, int end)
 {
-    return _string.empty();
+    if (end < 0) {
+        return _string.substr(offset);
+    }
+    else {
+        return _string.substr(offset, end);
+    }
 }
 
 int
 String::length (void)
 {
     return _string.length();
+}
+
+bool
+String::empty (void)
+{
+    return _string.empty();
 }
 
 int
