@@ -48,7 +48,9 @@ class Socket
 
     void setBlocking (bool state);
 
-    String recv (void);
+    String recv (int size = RECV_BUFSIZ);
+    String readLine (void);
+
     int send (String string);
 
     void close (void);

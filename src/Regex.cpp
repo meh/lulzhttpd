@@ -322,7 +322,7 @@ Regex::Sub (const std::string& sub, const std::string& string)
     return re.sub(data["replace"], string, true);
 }
 
-Strings
+Regex::Strings
 Regex::split (const std::string& string)
 {
     Strings splitted;
@@ -338,7 +338,7 @@ Regex::split (const std::string& string)
     return splitted;
 }
 
-Strings
+Regex::Strings
 Regex::Split (const std::string& regex, const std::string& string)
 {
     Regex re(regex);

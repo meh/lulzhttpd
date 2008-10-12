@@ -33,12 +33,36 @@ Client::~Client (void)
 void
 Client::start (void)
 {
-    String lol;
+    std::cerr << _socket->readLine().toString() << std::endl;
+    return;
 
-    HTTP* http = new HTTP;
-    http->request(_socket->recv().toString());
+    HTTP* request = new HTTP;
+    while (!request->done()) {
+        request->parse(_socket->readLine().toString());
+    }
 
+    HTTP* response = new HTTP;
+    if (request->isOk()) {
 
+    }
+    else {
+        std::stringstream resp;
+        resp << "FAGGOT IT'S A BAD REQUEST" << std::endl;
+
+        std::stringstream number;
+        number << resp.str().length();
+
+        response->status(request->status());
+        response->setHeader("Connection", "close");
+        response->setHeader("Content-Type", "text/plain");
+        response->setHeader("Content-Length", number.str());
+        response->setHeader("Server", "lulzHTTPd/0.1");
+
+        response->setData(resp.str());
+    }
+
+    delete request;
+    delete response;
 }
 
 };

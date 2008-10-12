@@ -17,7 +17,7 @@
 
 #include "HTTP.h"
 
-HTTP::StatusCodes HTTP::Status;
+HTTP::StatusCodes HTTP::Codes;
 Regex::Strings HTTP::RequestHeaders;
 Regex::Strings HTTP::ResponseHeaders;
 
@@ -26,6 +26,45 @@ HTTP::HTTP (void)
     this->clear();
     _initStatusCodes();
     _initHeaders();
+}
+
+void
+HTTP::parse (const std::string& text)
+{
+    if (_method.empty()) {
+        re.compile("^(\\w+) (/.+?) HTTP/(\\d.\\d)$");
+        if (re.match(text)) {
+            _method  = re.group(1);
+            _uri     = re.group(2);
+            _version = std::atof(re.group(3).c_str());
+        }
+        else {
+            setError(400);
+            return;
+        }
+    }
+    else {
+        if (_dataIncoming) {
+            _data = text;
+            _done = true;
+        }
+        else {
+            Header header = parseHeader(text, true);
+            
+            if (!header.first.empty()) {
+                _headers[header.first] = header.second;
+            }
+        }
+
+        if (text == "\n") {
+            if (_method == "POST") {
+                _dataIncoming = true;
+            }
+            else {
+                _done = true;
+            }
+        }
+    }
 }
 
 void
@@ -73,23 +112,31 @@ HTTP::request (const std::string& text)
 std::string
 HTTP::response (void)
 {
-    return "";
+    std::stringstream resp;
+
+    resp << "HTTP/" << _version << " " << this->status() << " " << Codes[this->status()] << std::endl;
+   
+    Headers::iterator head;
+    for (head = _headers.begin(); head != _headers.end(); head++) {
+        resp << _fixCase(head->first) << ": " << head->second << std::endl;
+    }
+
+    resp << std::endl << _data << std::endl;
+
+    return resp.str();
 }
 
 HTTP::Headers
 HTTP::parseHeaders (const std::string& headersText, bool request)
 {
     Headers headers;
-    re.compile("^([\\w\\-]+)\\s*:\\s*(.*)$", "");
 
     Regex::Strings lines = Regex::Split("/\\n/", headersText);
     for (size_t i = 0; i < lines.size(); i++) {
-        if (re.match(lines.at(i))) {
-            std::string name  = _lowerCase(re.group(1));
-            std::string value = re.group(2);
-
-            if (isValidHeader(name, request)) {
-                _headers[name] = value;
+        Header header = this->parseHeader(lines.at(i), request);
+        if (!header.first.empty()) {
+            if (isValidHeader(header.first, request)) {
+                _headers[header.first] = header.second;
             }
         }
     }
@@ -97,15 +144,22 @@ HTTP::parseHeaders (const std::string& headersText, bool request)
     return headers;
 }
 
-void
-HTTP::clear (void)
+HTTP::Header
+HTTP::parseHeader (const std::string& text, bool request)
 {
-    _isOk    = false;
-    _error   = 0;
-    _version = 0;
-    _uri     = "";
-    _host    = "";
-    _headers.clear();
+    re.compile("^([\\w\\-]+)\\s*:\\s*(.*)$", "");
+
+    Header header;
+    if (re.match(text)) {
+        header.first  = _fixCase(re.group(1));
+        header.second = re.group(2);
+    }
+    else {
+        header.first  = "";
+        header.second = "";
+    }
+
+    return header;
 }
 
 bool
@@ -120,7 +174,7 @@ HTTP::isValidHeader (const std::string& header, bool request)
     }
 
     for (size_t i = 0; i < checker->size(); i++) {
-        if (_lowerCase(header) == _lowerCase(checker->at(i))) {
+        if (_fixCase(header) == checker->at(i)) {
             return true;
         }
     }
@@ -129,11 +183,109 @@ HTTP::isValidHeader (const std::string& header, bool request)
 }
 
 std::string
-HTTP::_lowerCase (const std::string& text)
+HTTP::getHeader (const std::string& name)
 {
+    std::string Name = _fixCase(name);
+
+    if (_headers.find(Name) != _headers.end()) {
+        return _headers[Name];
+    }
+    else {
+        return "";
+    }
+}
+
+void
+HTTP::setHeader (const std::string& name, const std::string& value)
+{
+    std::string Name = _fixCase(name);
+
+    if (isValidHeader(Name, false)) {
+        _headers[Name] = value;
+    }
+}
+
+std::string
+HTTP::getData (void)
+{
+    return _data;
+}
+
+void
+HTTP::setData (const std::string& data)
+{
+    _data = data;
+}
+
+float
+HTTP::getVersion (void)
+{
+    return _version;
+}
+
+void
+HTTP::setVersion (float version)
+{
+    _version = version;
+}
+
+int
+HTTP::status (void)
+{
+    return _status;
+}
+
+void
+HTTP::status (int state)
+{
+    _status = state;
+}
+
+bool
+HTTP::done (void)
+{
+    return _done;
+}
+
+bool
+HTTP::isOk (void)
+{
+    return _isOk;
+}
+
+void
+HTTP::clear (void)
+{
+    _isOk    = false;
+    _status  = 0;
+
+    _version = 0;
+    _uri     = "";
+    _host    = "";
+
+    _data         = "";
+    _dataIncoming = false;
+
+    _headers.clear();
+}
+
+std::string
+HTTP::_fixCase (const std::string& text)
+{
+    bool firstChar = true;
+
     std::string nText;
     for (size_t i = 0; i < text.length(); i++) {
-        nText += std::tolower(text.at(i));
+        if (firstChar) {
+            firstChar = false;
+            nText += std::toupper(text.at(i));
+        }
+        else {
+            if (!std::isalpha(text.at(i))) {
+                firstChar = true;
+            }
+            nText += std::tolower(text.at(i));
+        }
     }
     return nText;
 }
@@ -141,57 +293,57 @@ HTTP::_lowerCase (const std::string& text)
 void
 HTTP::_initStatusCodes (void)
 {
-    if (Status.empty()) {
+    if (Codes.empty()) {
         // Informational
-        Status[100] = "Continue";
-        Status[101] = "Switching Protocols";
+        Codes[100] = "Continue";
+        Codes[101] = "Switching Protocols";
     
         // Successful
-        Status[200] = "OK";
-        Status[201] = "Created";
-        Status[202] = "Accepted";
-        Status[203] = "Non-Authoritative Information";
-        Status[204] = "No Content";
-        Status[205] = "Reset Content";
-        Status[206] = "Partial Content";
+        Codes[200] = "OK";
+        Codes[201] = "Created";
+        Codes[202] = "Accepted";
+        Codes[203] = "Non-Authoritative Information";
+        Codes[204] = "No Content";
+        Codes[205] = "Reset Content";
+        Codes[206] = "Partial Content";
         
         // Redirection
-        Status[300] = "Multiple Choices";
-        Status[301] = "Moved Permanently";
-        Status[302] = "Found";
-        Status[303] = "See Other";
-        Status[304] = "Not Modified";
-        Status[305] = "Use Proxy";
-        Status[306] = "LOLNO";
-        Status[307] = "Temporary Redirect";
+        Codes[300] = "Multiple Choices";
+        Codes[301] = "Moved Permanently";
+        Codes[302] = "Found";
+        Codes[303] = "See Other";
+        Codes[304] = "Not Modified";
+        Codes[305] = "Use Proxy";
+        Codes[306] = "LOLNO";
+        Codes[307] = "Temporary Redirect";
     
         // Client Error
-        Status[400] = "Bad Request";
-        Status[401] = "Unauthorized";
-        Status[402] = "Payment Required";
-        Status[403] = "Forbidden";
-        Status[404] = "Not Found";
-        Status[405] = "Method Not Allowed";
-        Status[406] = "Not Acceptable";
-        Status[407] = "Proxy Authentication Required";
-        Status[408] = "Request Timeout";
-        Status[409] = "Conflict";
-        Status[410] = "Gone";
-        Status[411] = "Length Required";
-        Status[412] = "Precondition Failed";
-        Status[413] = "Request Entity Too Large";
-        Status[414] = "Request-URI Too Long";
-        Status[415] = "Unsupported Media Type";
-        Status[416] = "Requested Range Not Satisfiable";
-        Status[417] = "Expectation Failed";
+        Codes[400] = "Bad Request";
+        Codes[401] = "Unauthorized";
+        Codes[402] = "Payment Required";
+        Codes[403] = "Forbidden";
+        Codes[404] = "Not Found";
+        Codes[405] = "Method Not Allowed";
+        Codes[406] = "Not Acceptable";
+        Codes[407] = "Proxy Authentication Required";
+        Codes[408] = "Request Timeout";
+        Codes[409] = "Conflict";
+        Codes[410] = "Gone";
+        Codes[411] = "Length Required";
+        Codes[412] = "Precondition Failed";
+        Codes[413] = "Request Entity Too Large";
+        Codes[414] = "Request-URI Too Long";
+        Codes[415] = "Unsupported Media Type";
+        Codes[416] = "Requested Range Not Satisfiable";
+        Codes[417] = "Expectation Failed";
     
         // Server Error
-        Status[500] = "Internal Server Error";
-        Status[501] = "Not Implemented";
-        Status[502] = "Bad Gateway";
-        Status[503] = "Service Unavailable";
-        Status[504] = "Gateway Timeout";
-        Status[505] = "HTTP Version Not Supported";
+        Codes[500] = "Internal Server Error";
+        Codes[501] = "Not Implemented";
+        Codes[502] = "Bad Gateway";
+        Codes[503] = "Service Unavailable";
+        Codes[504] = "Gateway Timeout";
+        Codes[505] = "HTTP Version Not Supported";
     }
 }
 

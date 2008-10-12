@@ -67,14 +67,24 @@ int main (int argc, char *argv[])
     }
 
     if (testConfig) {
-        lulzHTTPd::Config::test(configFile);
-        std::cout << lulzHTTPd::Config::testLog() << std::endl;
+        try {
+            lulzHTTPd::Config::test(configFile);
+            std::cout << lulzHTTPd::Config::testLog() << std::endl;
+        }
+        catch (std::exception e) {
+            std::cerr << e.what() << std::endl;
+        }
 
         return 0;
     }
 
-    lulzHTTPd::Server::init(configFile);
-    lulzHTTPd::Server::start();
+    try {
+        lulzHTTPd::Server::init(configFile);
+        lulzHTTPd::Server::start();
+    }
+    catch (std::exception e) {
+        std::cerr << e.what() << std::endl;
+    }
 
     return 0;
 }
