@@ -35,10 +35,10 @@ Client::start (void)
 {
     String lol;
 
-    lol = _socket->recv();
-    std::cerr << lol << std::endl;
-    _socket->send("NO U\n");
-    std::cerr << "sent" << std::endl;
+    HTTP* http = new HTTP;
+    http->request(_socket->recv().toString());
+
+
 }
 
 };

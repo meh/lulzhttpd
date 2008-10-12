@@ -18,24 +18,61 @@
 #if !defined(HTTP_H)
 #define HTTP_H
 
+#include <cctype>
+#include <cstdio>
 #include <string>
 #include <map>
+
+#include "Regex.h"
+
+#define setError(n) \
+    _error = n;\
+    _isOk  = false;
 
 class HTTP
 {
   public:
     typedef std::map<std::string, std::string> Headers;
+    typedef std::map<int, std::string> StatusCodes;
+
+  public:
+    static StatusCodes Status;
+    static Regex::Strings RequestHeaders;
+    static Regex::Strings ResponseHeaders;
 
   public:
     HTTP (void);
-    HTTP (const std::string& headersText, bool request = true)
 
-    Headers parseHeaders (const std::string& headersText);
+    void request (const std::string& text);
+    std::string response (void);
+
+    Headers parseHeaders (const std::string& headersText, bool request);
+
+    bool isValidHeader (const std::string& header, bool request);
 
     bool isOk (void);
 
+    void clear (void);
+
   private:
+    Regex re;
+
     bool _isOk;
+    int _error;
+
+    std::string _method;
+    std::string _uri;
+    float _version;
+    std::string _host;
+    std::string _data;
+
+    Headers _headers;
+
+  private:
+    void _initStatusCodes (void);
+    void _initHeaders (void);
+
+    std::string _lowerCase (const std::string& text);
 };
 
 #endif

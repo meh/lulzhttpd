@@ -82,11 +82,12 @@
 
 #define $(n) Regex::Group(n)
 
-typedef std::pair<int, int> Markers;
-typedef std::vector<std::string> Strings;
-
 class Regex
 {
+  public:
+    typedef std::pair<int, int> Markers;
+    typedef std::vector<std::string> Strings;
+
   public:
     Regex (void);
     Regex (const char* regex);
@@ -119,6 +120,8 @@ class Regex
 
     Strings split (const std::string& string);
     static Strings Split (const std::string& regex, const std::string& string);
+
+    static std::string Join (const std::string& with, const Strings& strings);
     
     bool isValid (void);
     

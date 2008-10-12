@@ -345,6 +345,16 @@ Regex::Split (const std::string& regex, const std::string& string)
     return re.split(string);
 }
 
+std::string
+Regex::Join (const std::string& with, const Strings& strings)
+{
+    std::string string;
+    for (size_t i = 0; i < strings.size(); i++) {
+        string += strings.at(i) + with;
+    }
+    return string;
+}
+
 bool
 Regex::isValid (void)
 {
