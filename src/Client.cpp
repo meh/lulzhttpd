@@ -16,50 +16,18 @@
 * along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
 ****************************************************************************/
 
-#include "Server.h"
+#include "Client.h"
 
 namespace lulzHTTPd {
 
-bool Server::_inited;
-int Server::_highestSocket;
-
-void* createClient (void* arg)
+Client::Client (System::Socket* socket)
 {
-    Client* client = new Client((System::Socket*) arg);
-    client->start();
-    delete client;
-
-    pthread_exit(NULL);
+    _socket = socket;
 }
 
 void
-Server::init (String& config)
+Client::start (void)
 {
-    if (!_inited) {
-        _inited = true;
-
-        Config::init(config);
-    }
-}
-
-void
-Server::start (void)
-{
-    if (!_inited) {
-        throw Exception(Exception::SERVER_NOT_INITED);
-    }
-
-    // --- Modules etc, all the stuff that has to be done.
-    
-    // Modules bla bla ---
-
-    System::Socket* sock = new System::Socket("localhost", 2707, 20);
-
-    while (1) {
-        pthread_t thread;
-        pthread_create(&thread, NULL, createClient, sock->accept());
-        pthread_detach(thread);
-    }
 }
 
 };

@@ -18,6 +18,8 @@
 
 #include "Exception.h"
 
+namespace lulzHTTPd {
+
 Exception::Exception (int code)
 {
     switch (code) {
@@ -49,8 +51,8 @@ Exception::Exception (int code)
         _description = "close() failed.";
         break;
 
-        case SOCKET_ERROR_SET_NON_BLOCKING:
-        _description = "Couldn't set the socket to non blocking.";
+        case SOCKET_ERROR_SET_BLOCK:
+        _description = "Couldn't change the socket's block state.";
         break;
 
         default:
@@ -68,4 +70,6 @@ Exception::what (void) throw()
 {
     return _description.toChars();
 }
+
+};
 

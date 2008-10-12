@@ -21,6 +21,7 @@
 
 #include "common.h"
 #include "Socket.h"
+#include "Client.h"
 
 #include <pthread.h>
 

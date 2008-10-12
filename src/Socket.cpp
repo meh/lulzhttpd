@@ -18,11 +18,13 @@
 
 #include "Socket.h"
 
+namespace lulzHTTPd {
+
 namespace System {
 
 Socket::Socket (const String& address, int port, int maxConnections)
 {
-    _reuse;
+    _reuse = 0;
 
     _sd = System::socket(AF_INET, SOCK_STREAM, 0);
     setsockopt(_sd, SOL_SOCKET, SO_REUSEADDR, &_reuse, sizeof(_reuse));
@@ -31,16 +33,14 @@ Socket::Socket (const String& address, int port, int maxConnections)
         throw Exception(Exception::SOCKET_CREATION);
     }
 
-    _bound = false;
-
-    this->_bind(address, port);
-    this->_listen(maxConnections);
-
-
+    _bind(address, port);
+    _listen(maxConnections);
 }
 
 Socket::Socket (const Socket& socket)
 {
+    _reuse = 0;
+
     sockaddr remote;
     socklen_t len = sizeof(remote);
 
@@ -49,8 +49,6 @@ Socket::Socket (const Socket& socket)
     if (_sd < 0) {
         throw Exception(Exception::SOCKET_ACCEPT);
     }
-
-    _bound = true;
 }
 
 Socket::~Socket (void)
@@ -112,8 +110,6 @@ Socket::close (void)
     if (::close(_sd) < 0 && errno != EBADF) {
         throw Exception(Exception::SOCKET_CLOSE);
     }
-
-    _bound = false;
 }
 
 Socket&
@@ -152,6 +148,11 @@ Socket::operator >> (String buffer)
     buffer = this->recv();
 }
 
+Socket::operator int (void)
+{
+    return _sd;
+}
+
 void
 Socket::_bind (const String& addr, int port)
 {
@@ -166,9 +167,6 @@ Socket::_bind (const String& addr, int port)
     if (System::bind(_sd, &local, sizeof(local)) < 0) {
         throw Exception(Exception::SOCKET_BIND);
     }
-
-    _bound = true;
-
 }
 
 void
@@ -180,10 +178,11 @@ Socket::_listen (int maxConnections)
 }
 
 void
-Socket::_setNonBlocking (void)
+Socket::setBlocking (bool blocking)
 {
-    if (fcntl(_sd, F_SETFL, (fcntl(_sd, F_GETFL) | O_NONBLOCK)) < 0) {
-        throw Exception(Exception::SOCKET_ERROR_SET_NON_BLOCKING);
+    long flags = fcntl(_sd, F_GETFL);
+    if (fcntl(_sd, F_SETFL, (blocking? flags | O_NONBLOCK : flags & ~O_NONBLOCK)) < 0) {
+        throw Exception(Exception::SOCKET_ERROR_SET_BLOCK);
     }
 }
 
@@ -240,6 +239,8 @@ Socket::_initAddr (in_addr_t addr, int port)
 
     return *(struct sockaddr*) &nAddr;
 }
+
+};
 
 };
 

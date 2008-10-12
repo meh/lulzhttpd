@@ -1,8 +1,10 @@
 C++  = g++ ;
 LINK = $(C++) ;
 
-Main LOLd : src/main.cpp src/Server.cpp src/Config.cpp
+Main LOLd : src/main.cpp src/Config.cpp src/Server.cpp src/Client.cpp
             src/Regex.cpp src/String.cpp src/Exception.cpp src/Socket.cpp ;
 
-LINKLIBS on LOLd = -lpcre ;
+LINKLIBS on LOLd = -lpcre -lpthread ;
+
+InstallBin $(BINDIR) : LOLd$(SUFEXE) ;
 

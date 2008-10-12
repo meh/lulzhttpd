@@ -21,6 +21,8 @@
 
 #include "common.h"
 
+namespace lulzHTTPd {
+
 namespace System {
 
 #include <netinet/in.h>
@@ -44,6 +46,8 @@ class Socket
 
     Socket* accept (void);
 
+    void setBlocking (bool state);
+
     String recv (void);
     int send (String string);
 
@@ -58,20 +62,21 @@ class Socket
     Socket& operator >> (std::string buffer);
     Socket& operator >> (String buffer);
 
+    operator int (void);
+
   private:
     int _sd;
-    bool _bound;
-
     int _reuse;
 
   private:
     void _bind (const String& addr, int port);
     void _listen (int maxConnections);
-    void _setNonBlocking (void);
 
     in_addr_t _toIPv4 (String& addr);
     bool _isValidIPv4 (String& addr);
     struct sockaddr _initAddr (in_addr_t addr, int port);
+};
+
 };
 
 };

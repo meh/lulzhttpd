@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyleft meh.                                                             * 
+* Copyleft meh.                                                             *
 *                                                                           *
 * This is free software: you can redistribute it and/or modif.              *
 * it under the terms of the GNU Affero General Public License a.            *
