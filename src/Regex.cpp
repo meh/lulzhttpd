@@ -207,13 +207,13 @@ Regex::match (const std::string& string, unsigned int offset)
 
     if (_isGlobal) {
         if (_matchesNumber == PCRE_ERROR_NOMATCH) {
-.        _lastPosition = 0; // reset the position for next match (perl does this)
+            _lastPosition = 0; // reset the position for next match (perl does this)
         }
         else if (_matchesNumber > 0) {
-.        _lastPosition = marks.at(0).second; // increment by the end of the match
+            _lastPosition = marks.at(0).second; // increment by the end of the match
         }
         else {
-.        _lastPosition = 0;
+            _lastPosition = 0;
         }
     }
 
@@ -223,18 +223,18 @@ Regex::match (const std::string& string, unsigned int offset)
 
         size_t i;
         for (i = 0; i < _marks.size(); i++) {
-.        int begin = _marks.at(i).first;
+            int begin = _marks.at(i).first;
 
-.        if (begin == -1) {
-.            _groups.push_back("");
-.            continue;
-.        }
+            if (begin == -1) {
+                _groups.push_back("");
+                continue;
+            }
 
-.        int end = _marks.at(i).second;
+            int end = _marks.at(i).second;
 
-.        _groups.push_back(string.substr(begin, end-begin));
+            _groups.push_back(string.substr(begin, end-begin));
 
-.        _globalGroups.clear(); _globalGroups = _groups;
+            _globalGroups.clear(); _globalGroups = _groups;
         }
     }
 
@@ -275,17 +275,17 @@ Regex::sub (const std::string& replace, const std::string& string, bool backref)
         int lastMatch = 0;
 
         while (this->match(string)) {
-.        stream << string.substr(lastMatch, _marks.at(0).first - lastMatch);
+            stream << string.substr(lastMatch, _marks.at(0).first - lastMatch);
 
-.        std::string replacement = replace;
+            std::string replacement = replace;
 
-.        if (backref) {
-.            replacement = _updateReplacement(replacement);
-.        }
+            if (backref) {
+                replacement = _updateReplacement(replacement);
+            }
 
-.        stream << replacement;
+            stream << replacement;
 
-.        lastMatch = _marks.at(0).second;
+            lastMatch = _marks.at(0).second;
         }
 
         stream << string.substr(lastMatch);
@@ -294,18 +294,18 @@ Regex::sub (const std::string& replace, const std::string& string, bool backref)
         int matchesNumber = this->match(string);
 
         if (matchesNumber > 0) {
-.        std::string replacement = replace;
+            std::string replacement = replace;
 
-.        if (backref) {
-.            replacement = _updateReplacement(replacement);
-.        }
+            if (backref) {
+                replacement = _updateReplacement(replacement);
+            }
 
-.        stream << string.substr(0, _marks.at(0).first);
-.        stream << replacement;
-.        stream << string.substr(_marks.at(0).second);
+            stream << string.substr(0, _marks.at(0).first);
+            stream << replacement;
+            stream << string.substr(_marks.at(0).second);
         }
         else {
-.        stream << string;
+            stream << string;
         }
     }
 

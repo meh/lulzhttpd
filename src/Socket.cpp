@@ -75,8 +75,8 @@ Socket::recv (void)
 
     while ((n = read(_sd, buffer, RECV_BUFSIZ)) > 0) {
         if (n < RECV_BUFSIZ) {
-.        buffer[n] = '\0';
-.        break;
+            buffer[n] = '\0';
+            break;
         }
 
         length += RECV_BUFSIZ;
@@ -200,10 +200,10 @@ Socket::_toIPv4 (String& addr)
         he = System::gethostbyname(addr.toChars());
 
         if (he == NULL) {
-.        nAddr = INADDR_NONE;
+            nAddr = INADDR_NONE;
         }
         else {
-.        nAddr = ((struct in_addr *) he->h_addr)->s_addr;
+            nAddr = ((struct in_addr *) he->h_addr)->s_addr;
         }
     }
 
@@ -217,9 +217,9 @@ Socket::_isValidIPv4 (String& addr)
 
     if (ip.match(addr.toString())) {
         for (int i = 0; i < 4; i++) {
-.        if (String(ip.group(i+1)).toInt() > 255) {
-.            return false;
-.        }
+            if (String(ip.group(i+1)).toInt() > 255) {
+                return false;
+            }
         }
     }
     else {
@@ -235,7 +235,7 @@ Socket::_initAddr (in_addr_t addr, int port)
     sockaddr_in nAddr;
 
     nAddr.sin_family      = AF_INET;
-    nAddr.sin_port        = System::htons(port);
+    nAddr.sin_port        = htons(port);
     nAddr.sin_addr.s_addr = addr;
 
     return *(struct sockaddr*) &nAddr;

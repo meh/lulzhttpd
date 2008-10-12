@@ -20,6 +20,9 @@
 #define LULZHTTPD_SERVER_H
 
 #include "common.h"
+#include "Socket.h"
+
+#include <pthread.h>
 
 namespace lulzHTTPd {
 
