@@ -28,11 +28,16 @@ HTTP::HTTP (void)
     _initHeaders();
 }
 
+HTTP::~HTTP (void)
+{
+}
+
 void
 HTTP::parse (const std::string& text)
 {
     if (_method.empty()) {
-        re.compile("^(\\w+) (/.+?) HTTP/(\\d.\\d)$");
+        std::cerr << "-| " << text << " |-" << std::endl << std::endl;
+        re.compile("^(\\w+) (.*?) HTTP/(\\d.\\d)$", "m");
         if (re.match(text)) {
             _method  = re.group(1);
             _uri     = re.group(2);
@@ -62,6 +67,13 @@ HTTP::parse (const std::string& text)
             }
             else {
                 _done = true;
+            }
+
+            if (_version >= 1.1) {
+                if (_headers.find("host") == _headers.end()) {
+                    setError(400);
+                    return;
+                }
             }
         }
     }
@@ -110,11 +122,12 @@ HTTP::request (const std::string& text)
 }
 
 std::string
-HTTP::response (void)
+HTTP::get (void)
 {
     std::stringstream resp;
 
-    resp << "HTTP/" << _version << " " << this->status() << " " << Codes[this->status()] << std::endl;
+    resp << "HTTP/" << std::fixed << std::setprecision(1) <<_version << " ";
+    resp << this->status() << " " << Codes[this->status()] << std::endl;
    
     Headers::iterator head;
     for (head = _headers.begin(); head != _headers.end(); head++) {
@@ -256,10 +269,12 @@ HTTP::isOk (void)
 void
 HTTP::clear (void)
 {
+    _done    = false;
     _isOk    = false;
     _status  = 0;
-
     _version = 0;
+
+    _method  = "";
     _uri     = "";
     _host    = "";
 
@@ -379,6 +394,7 @@ HTTP::_initHeaders (void)
         ResponseHeaders.push_back("Content-Disposition");
         ResponseHeaders.push_back("Content-MD5");
         ResponseHeaders.push_back("Content-Range");
+        ResponseHeaders.push_back("Content-Type");
         ResponseHeaders.push_back("Date");
         ResponseHeaders.push_back("ETag");
         ResponseHeaders.push_back("Expires");

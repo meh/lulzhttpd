@@ -71,7 +71,7 @@ int main (int argc, char *argv[])
             lulzHTTPd::Config::test(configFile);
             std::cout << lulzHTTPd::Config::testLog() << std::endl;
         }
-        catch (std::exception e) {
+        catch (lulzHTTPd::Exception e) {
             std::cerr << e.what() << std::endl;
         }
 
@@ -82,7 +82,7 @@ int main (int argc, char *argv[])
         lulzHTTPd::Server::init(configFile);
         lulzHTTPd::Server::start();
     }
-    catch (std::exception e) {
+    catch (lulzHTTPd::Exception e) {
         std::cerr << e.what() << std::endl;
     }
 

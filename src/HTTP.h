@@ -20,6 +20,7 @@
 
 #include <cctype>
 #include <cstdio>
+#include <iomanip>
 #include <string>
 #include <map>
 
@@ -27,7 +28,8 @@
 
 #define setError(n) \
     _status = n;\
-    _isOk   = false;
+    _isOk   = false;\
+    _done   = true;
 
 class HTTP
 {
@@ -43,11 +45,12 @@ class HTTP
 
   public:
     HTTP (void);
+    ~HTTP (void);
 
     void parse (const std::string& text);
     void request (const std::string& text);
 
-    std::string response (void);
+    std::string get (void);
 
     Headers parseHeaders (const std::string& headersText, bool request);
     Header parseHeader (const std::string& text, bool request);

@@ -33,12 +33,9 @@ Client::~Client (void)
 void
 Client::start (void)
 {
-    std::cerr << _socket->readLine().toString() << std::endl;
-    return;
-
     HTTP* request = new HTTP;
     while (!request->done()) {
-        request->parse(_socket->readLine().toString());
+        request->parse(_socket->recv().toString());
     }
 
     HTTP* response = new HTTP;
@@ -53,12 +50,16 @@ Client::start (void)
         number << resp.str().length();
 
         response->status(request->status());
+        response->setVersion(request->getVersion() ? request->getVersion() : 1.0);
+
         response->setHeader("Connection", "close");
         response->setHeader("Content-Type", "text/plain");
         response->setHeader("Content-Length", number.str());
         response->setHeader("Server", "lulzHTTPd/0.1");
 
         response->setData(resp.str());
+
+        _socket->send(response->get());
     }
 
     delete request;
