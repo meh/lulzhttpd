@@ -60,14 +60,16 @@ class HTTP
     std::string getHeader (const std::string& name);
     void setHeader (const std::string& name, const std::string& value);
 
+    std::string getUri (void);
+
     std::string getData (void);
     void setData (const std::string& data);
 
     float getVersion (void);
     void setVersion (float version);
 
-    int status (void);
-    void status (int state);
+    int getStatus (void);
+    void setStatus (int state);
 
     bool done (void);
     bool isOk (void);

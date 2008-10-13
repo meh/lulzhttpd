@@ -97,8 +97,8 @@ class String
     std::string _string;
 };
 
-int operator ^= (String string, String regex);
-int operator ^= (String string, const char* regex);
-int operator ^= (String string, const std::string& regex);
+int operator ^= (String& string, String& regex);
+int operator ^= (String& string, const char* regex);
+int operator ^= (String& string, const std::string& regex);
 
 #endif

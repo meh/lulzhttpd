@@ -376,17 +376,17 @@ operator >> (std::istream& in, String string)
     return in;
 }
 
-int operator ^= (String string, String regex)
+int operator ^= (String& string, String& regex)
 {
     Regex::Match(regex.toString(), string.toString());
 }
 
-int operator ^= (String string, const char* regex)
+int operator ^= (String& string, const char* regex)
 {
     Regex::Match(regex, string.toString());
 }
 
-int operator ^= (String string, std::string regex)
+int operator ^= (String& string, const std::string& regex)
 {
     Regex::Match(regex, string.toString());
 }

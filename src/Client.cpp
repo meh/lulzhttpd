@@ -41,21 +41,30 @@ Client::start (void)
 
     HTTP* response = new HTTP;
     if (request->isOk()) {
+        try {
+            response->setData(System::readFile(request->getUri()).toString());
 
+            response->setStatus(200);
+            response->setHeader("Connection", "close");
+            response->setHeader("Content-Type", "text/plain");
+            response->setHeader("Content-Length", String((int)response->getData().length()).toString());
+            response->setHeader("Server", "lulzHTTPd/0.1");
+
+            _socket->send(response->get());
+        }
+        catch (Exception e) {
+        }
     }
     else {
         std::stringstream resp;
         resp << "FAGGOT IT'S A BAD REQUEST" << std::endl;
 
-        std::stringstream number;
-        number << resp.str().length();
-
-        response->status(request->status());
+        response->setStatus(request->getStatus());
         response->setVersion(request->getVersion() ? request->getVersion() : 1.0);
 
         response->setHeader("Connection", "close");
         response->setHeader("Content-Type", "text/plain");
-        response->setHeader("Content-Length", number.str());
+        response->setHeader("Content-Length", String((int)resp.str().length()).toString());
         response->setHeader("Server", "lulzHTTPd/0.1");
 
         response->setData(resp.str());

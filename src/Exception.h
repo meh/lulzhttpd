@@ -26,18 +26,20 @@ namespace lulzHTTPd {
 class Exception : public std::exception
 {
   public:
-    static const int SERVER_NOT_INITED = 11;
+    static const int SERVER_NOT_INITED = 100;
 
-    static const int SOCKET_CREATION        = 21;
-    static const int SOCKET_LISTEN          = 22;
-    static const int SOCKET_ACCEPT          = 23;
-    static const int SOCKET_BIND            = 24;
-    static const int SOCKET_READ            = 25;
-    static const int SOCKET_WRITE           = 26;
-    static const int SOCKET_CLOSE           = 27;
-    static const int SOCKET_ERROR_SET_BLOCK = 28;
+    static const int SOCKET_CREATION        = 201;
+    static const int SOCKET_LISTEN          = 202;
+    static const int SOCKET_ACCEPT          = 203;
+    static const int SOCKET_BIND            = 204;
+    static const int SOCKET_READ            = 205;
+    static const int SOCKET_WRITE           = 206;
+    static const int SOCKET_CLOSE           = 207;
+    static const int SOCKET_ERROR_SET_BLOCK = 208;
 
-    static const int CONFIG_PARSE_ERROR = 41;
+    static const int CONFIG_PARSE_ERROR = 400;
+
+    static const int FILE_NOT_FOUND = 500;
 
   public:
     Exception (int code);

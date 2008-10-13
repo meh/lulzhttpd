@@ -128,7 +128,7 @@ HTTP::get (void)
     std::stringstream resp;
 
     resp << "HTTP/" << std::fixed << std::setprecision(1) <<_version << " ";
-    resp << this->status() << " " << Codes[this->status()] << std::endl;
+    resp << this->getStatus() << " " << Codes[this->getStatus()] << std::endl;
    
     Headers::iterator head;
     for (head = _headers.begin(); head != _headers.end(); head++) {
@@ -220,6 +220,12 @@ HTTP::setHeader (const std::string& name, const std::string& value)
 }
 
 std::string
+HTTP::getUri (void)
+{
+    return _uri;
+}
+
+std::string
 HTTP::getData (void)
 {
     return _data;
@@ -244,13 +250,13 @@ HTTP::setVersion (float version)
 }
 
 int
-HTTP::status (void)
+HTTP::getStatus (void)
 {
     return _status;
 }
 
 void
-HTTP::status (int state)
+HTTP::setStatus (int state)
 {
     _status = state;
 }
