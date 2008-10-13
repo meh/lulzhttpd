@@ -49,6 +49,15 @@ String::append (String& string)
 }
 
 void
+String::append (char string)
+{
+    std::stringstream tmp;
+    tmp << string;
+
+    _string += tmp.str();
+}
+
+void
 String::append (const std::string& string)
 {
     _string += string;
@@ -235,6 +244,14 @@ String::operator += (String string)
 }
 
 String
+String::operator += (char string)
+{
+    this->append(string);
+
+    return *this;
+}
+
+String
 String::operator += (const char* string)
 {
     this->append(string);
@@ -283,6 +300,14 @@ String::operator += (double number)
 
 String
 String::operator + (String string)
+{
+    this->append(string);
+
+    return *this;
+}
+
+String
+String::operator + (char string)
 {
     this->append(string);
 

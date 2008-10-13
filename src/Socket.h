@@ -48,7 +48,7 @@ class Socket
 
     void setBlocking (bool state);
 
-    String recv (int size = RECV_BUFSIZ);
+    String recv (size_t length = RECV_BUFSIZ);
     String readLine (void);
 
     int send (String string);

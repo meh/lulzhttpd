@@ -35,7 +35,8 @@ Client::start (void)
 {
     HTTP* request = new HTTP;
     while (!request->done()) {
-        request->parse(_socket->recv().toString());
+        std::string string = _socket->readLine().toString();
+        request->parse(string);
     }
 
     HTTP* response = new HTTP;

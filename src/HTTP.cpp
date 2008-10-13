@@ -36,8 +36,7 @@ void
 HTTP::parse (const std::string& text)
 {
     if (_method.empty()) {
-        std::cerr << "-| " << text << " |-" << std::endl << std::endl;
-        re.compile("^(\\w+) (.*?) HTTP/(\\d.\\d)$", "m");
+        re.compile("^(\\w+) (/.*?) HTTP/(\\d.\\d)$", "");
         if (re.match(text)) {
             _method  = re.group(1);
             _uri     = re.group(2);
@@ -52,16 +51,16 @@ HTTP::parse (const std::string& text)
         if (_dataIncoming) {
             _data = text;
             _done = true;
+            _isOk = true;
         }
         else {
             Header header = parseHeader(text, true);
-            
             if (!header.first.empty()) {
                 _headers[header.first] = header.second;
             }
         }
 
-        if (text == "\n") {
+        if (text.empty()) {
             if (_method == "POST") {
                 _dataIncoming = true;
             }
@@ -70,11 +69,13 @@ HTTP::parse (const std::string& text)
             }
 
             if (_version >= 1.1) {
-                if (_headers.find("host") == _headers.end()) {
+                if (_headers.find("Host") == _headers.end()) {
                     setError(400);
                     return;
                 }
             }
+
+            _isOk = true;
         }
     }
 }
@@ -104,7 +105,7 @@ HTTP::request (const std::string& text)
     _headers = this->parseHeaders(Regex::Join("\n", lines), true);
 
     if (_version >= 1.1) {
-        if (_headers.find("host") == _headers.end()) {
+        if (_headers.find("Host") == _headers.end()) {
             setError(400);
             return;
         }

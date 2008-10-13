@@ -35,6 +35,7 @@ class String
     String (double number);
 
     void append (String& string);
+    void append (char string);
     void append (const std::string& string);
     void append (const int number);
     void append (const long number);
@@ -72,6 +73,7 @@ class String
     static std::string toString (const double number);
 
     String operator += (String string);
+    String operator += (char string);
     String operator += (const char* string);
     String operator += (std::string string);
     String operator += (int number);
@@ -80,6 +82,7 @@ class String
     String operator += (double number);
 
     String operator + (String string);
+    String operator + (char string);
     String operator + (const char* string);
     String operator + (std::string string);
     String operator + (int number);

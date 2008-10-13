@@ -63,29 +63,18 @@ Socket::accept (void)
 }
 
 String
-Socket::recv (int size)
+Socket::recv (size_t length)
 {
-    int n;
-    char* buffer = NULL;
-    
-    buffer = (char*) realloc(buffer, size+1);
-    while ((n = read(_sd, buffer, RECV_BUFSIZ)) > 0) {
-        if (n < RECV_BUFSIZ) {
-            buffer[n] = '\0';
-            break;
-        }
+    char* buffer = new char[length+1];
 
-        size += RECV_BUFSIZ;
-        buffer = (char*) realloc(buffer, size+1);
-    }
-
-    if (n == -1) {
+    int n = read(_sd, buffer, length);
+    if (n < 0) {
         throw Exception(Exception::SOCKET_READ);
     }
+    buffer[n] = '\0';
 
     String nBuffer = buffer;
-    free(buffer);
-
+    delete[] buffer;
     return nBuffer;
 }
 
@@ -94,11 +83,12 @@ Socket::readLine (void)
 {
     String nText;
     
-    String ch;
-    while ((ch = recv(1)).toString() != "\n") {
-        nText += ch;
+    char ch;
+    while ((ch = recv(1).toChars()[0]) != '\n' && ch != '\0' && ch != EOF) {
+        if (ch != '\r') {
+            nText += ch;
+        }
     }
-    nText += "\n";
 
     return nText;
 }
