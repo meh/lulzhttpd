@@ -20,6 +20,7 @@
 #define LULZHTTPD_COMMON_H
 
 #include <iostream>
+#include <iomanip>
 
 #include "String.h"
 #include "Regex.h"

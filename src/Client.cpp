@@ -36,18 +36,20 @@ Client::start (void)
     HTTP* request = new HTTP;
     while (!request->done()) {
         std::string string = _socket->readLine().toString();
-        request->parse(string);
+        request->request(string);
     }
 
     HTTP* response = new HTTP;
     if (request->isOk()) {
         try {
-            response->setData(System::readFile(request->getUri()).toString());
+            response->setData(System::readFile(request->getUri()));
 
             response->setStatus(200);
+            response->setVersion(request->getVersion());
+
             response->setHeader("Connection", "close");
             response->setHeader("Content-Type", "text/plain");
-            response->setHeader("Content-Length", String((int)response->getData().length()).toString());
+            response->setHeader("Content-Length", response->getData().length());
             response->setHeader("Server", "lulzHTTPd/0.1");
 
             _socket->send(response->get());

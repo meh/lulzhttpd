@@ -16,20 +16,40 @@
 * along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
 ****************************************************************************/
 
-#if !defined(LULZHTTPD_SYSTEM_H)
-#define LULZHTTPD_SYSTEM_H
-
-#include "common.h"
+#include "System.h"
 
 namespace lulzHTTPd {
 
 namespace System {
 
-String readFile (String fileName);
-String normalizedPath (String path);
+String readFile (String fileName)
+{
+    std::ifstream file(fileName);
+
+    if (file.is_open()) {
+        std::string text;
+        while (!file.eof()) {
+            std::string line;
+
+            getline(file, line);
+            text += line + "\n";
+        }
+        file.close();
+        text.resize(text.length()-2);
+
+        return text;
+    }
+    else {
+        throw Exception(Exception::FILE_NOT_FOUND);
+    }
+}
+
+String normalizePath (String path)
+{
+    return path &= "s/\\.*\\/*//";
+}
 
 };
 
 };
 
-#endif

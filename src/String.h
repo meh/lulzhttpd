@@ -28,11 +28,53 @@
 class String
 {
   public:
+    friend std::ostream& operator << (std::ostream& out, String string);
+    friend std::istream& operator >> (std::istream& in, String string);
+
+    friend std::stringstream& operator << (std::stringstream& stream, String string);
+
+  public:
+    operator int (void);
+    operator long (void);
+    operator long long (void);
+    operator double (void);
+    operator char* (void);
+    operator std::string (void);
+
+    String operator += (String string);
+    String operator += (const char string);
+    String operator += (const char* string);
+    String operator += (std::string string);
+    String operator += (int number);
+    String operator += (long number);
+    String operator += (long long number);
+    String operator += (double number);
+
+    String operator + (String string);
+    String operator + (const char string);
+    String operator + (const char* string);
+    String operator + (std::string string);
+    String operator + (int number);
+    String operator + (long number);
+    String operator + (long long number);
+    String operator + (double number);
+
+    bool operator == (const char* other);
+    bool operator == (const std::string& other);
+    bool operator == (String& other);
+
+    bool operator != (const char* other);
+    bool operator != (const std::string& other);
+    bool operator != (String& other);
+
+  public:
     String (void);
     String (const char* string);
     String (const std::string& string);
     String (int number);
     String (double number);
+
+    char at (size_t index);
 
     void append (String& string);
     void append (char string);
@@ -72,33 +114,14 @@ class String
     static std::string toString (const long long number);
     static std::string toString (const double number);
 
-    String operator += (String string);
-    String operator += (char string);
-    String operator += (const char* string);
-    String operator += (std::string string);
-    String operator += (int number);
-    String operator += (long number);
-    String operator += (long long number);
-    String operator += (double number);
+    static char toUpper (const char string);
+    static String toUpper (String string);
 
-    String operator + (String string);
-    String operator + (char string);
-    String operator + (const char* string);
-    String operator + (std::string string);
-    String operator + (int number);
-    String operator + (long number);
-    String operator + (long long number);
-    String operator + (double number);
-
-    friend std::ostream& operator << (std::ostream& out, String string);
-    friend std::istream& operator >> (std::istream& in, String string);
+    static char toLower (const char string);
+    static String toLower (String string);
 
   protected:
     std::string _string;
 };
-
-int operator ^= (String& string, String& regex);
-int operator ^= (String& string, const char* regex);
-int operator ^= (String& string, const std::string& regex);
 
 #endif

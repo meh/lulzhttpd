@@ -18,13 +18,7 @@
 #if !defined(HTTP_H)
 #define HTTP_H
 
-#include <cctype>
-#include <cstdio>
-#include <iomanip>
-#include <string>
-#include <map>
-
-#include "Regex.h"
+#include "common.h"
 
 #define setError(n) \
     _status = n;\
@@ -34,36 +28,33 @@
 class HTTP
 {
   public:
-    typedef std::map<std::string, std::string> Headers;
-    typedef std::pair<std::string, std::string> Header;
-    typedef std::map<int, std::string> StatusCodes;
+    typedef std::map<std::string, String> Headers;
+    typedef std::pair<String, String> Header;
+    typedef std::map<int, String> StatusCodes;
 
   public:
     static StatusCodes Codes;
-    static Regex::Strings RequestHeaders;
-    static Regex::Strings ResponseHeaders;
 
   public:
     HTTP (void);
     ~HTTP (void);
 
-    void parse (const std::string& text);
-    void request (const std::string& text);
+    void request (String text);
 
-    std::string get (void);
+    String get (void);
 
-    Headers parseHeaders (const std::string& headersText, bool request);
-    Header parseHeader (const std::string& text, bool request);
+    Headers parseHeaders (String headersText);
+    Header parseHeader (String text);
 
-    bool isValidHeader (const std::string& header, bool request);
+    String getHeader (String name);
+    void setHeader (String name, String value);
 
-    std::string getHeader (const std::string& name);
-    void setHeader (const std::string& name, const std::string& value);
+    String getUri (void);
+    String getHost (void);
+    String getMethod (void);
 
-    std::string getUri (void);
-
-    std::string getData (void);
-    void setData (const std::string& data);
+    String getData (void);
+    void setData (String data);
 
     float getVersion (void);
     void setVersion (float version);
@@ -84,21 +75,20 @@ class HTTP
 
     int _status;
 
-    std::string _method;
-    std::string _uri;
+    String _method;
+    String _uri;
     float _version;
-    std::string _host;
+    String _host;
 
     bool _dataIncoming;
-    std::string _data;
+    String _data;
 
     Headers _headers;
 
   private:
     void _initStatusCodes (void);
-    void _initHeaders (void);
 
-    std::string _fixCase (const std::string& text);
+    String _fixCase (String text);
 };
 
 #endif

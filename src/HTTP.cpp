@@ -18,14 +18,11 @@
 #include "HTTP.h"
 
 HTTP::StatusCodes HTTP::Codes;
-Regex::Strings HTTP::RequestHeaders;
-Regex::Strings HTTP::ResponseHeaders;
 
 HTTP::HTTP (void)
 {
     this->clear();
     _initStatusCodes();
-    _initHeaders();
 }
 
 HTTP::~HTTP (void)
@@ -33,7 +30,7 @@ HTTP::~HTTP (void)
 }
 
 void
-HTTP::parse (const std::string& text)
+HTTP::request (String text)
 {
     if (_method.empty()) {
         re.compile("^(\\w+) (/.*?) HTTP/(\\d.\\d)$", "");
@@ -54,7 +51,7 @@ HTTP::parse (const std::string& text)
             _isOk = true;
         }
         else {
-            Header header = parseHeader(text, true);
+            Header header = parseHeader(text);
             if (!header.first.empty()) {
                 _headers[header.first] = header.second;
             }
@@ -80,49 +77,7 @@ HTTP::parse (const std::string& text)
     }
 }
 
-void
-HTTP::request (const std::string& text)
-{
-    Regex::Strings lines = Regex::Split("/\\n/", text);
-
-    if (lines.size() < 1) {
-        setError(400);
-        return;
-    }
-
-    re.compile("^(\\w+) (/.+?) HTTP/(\\d.\\d)$");
-    if (re.match(lines.at(0))) {
-        _method  = re.group(1);
-        _uri     = re.group(2);
-        _version = std::atof(re.group(3).c_str());
-    }
-    else {
-        setError(400);
-        return;
-    }
-
-    lines.erase(lines.begin());
-    _headers = this->parseHeaders(Regex::Join("\n", lines), true);
-
-    if (_version >= 1.1) {
-        if (_headers.find("Host") == _headers.end()) {
-            setError(400);
-            return;
-        }
-    }
-
-    if (_method == "POST") {
-        re.compile("\\n\\n(.*)", "ms");
-        if (re.match(Regex::Join("\n", lines))) {
-            _data = re.group(1);
-        }
-        else {
-            _data = "";
-        }
-    }
-}
-
-std::string
+String
 HTTP::get (void)
 {
     std::stringstream resp;
@@ -132,7 +87,7 @@ HTTP::get (void)
    
     Headers::iterator head;
     for (head = _headers.begin(); head != _headers.end(); head++) {
-        resp << _fixCase(head->first) << ": " << head->second << std::endl;
+        resp << head->first << ": " << head->second << std::endl;
     }
 
     resp << std::endl << _data << std::endl;
@@ -141,17 +96,15 @@ HTTP::get (void)
 }
 
 HTTP::Headers
-HTTP::parseHeaders (const std::string& headersText, bool request)
+HTTP::parseHeaders (String headersText)
 {
     Headers headers;
 
     Regex::Strings lines = Regex::Split("/\\n/", headersText);
     for (size_t i = 0; i < lines.size(); i++) {
-        Header header = this->parseHeader(lines.at(i), request);
+        Header header = this->parseHeader(String(lines.at(i)));
         if (!header.first.empty()) {
-            if (isValidHeader(header.first, request)) {
-                _headers[header.first] = header.second;
-            }
+            _headers[header.first] = header.second;
         }
     }
 
@@ -159,7 +112,7 @@ HTTP::parseHeaders (const std::string& headersText, bool request)
 }
 
 HTTP::Header
-HTTP::parseHeader (const std::string& text, bool request)
+HTTP::parseHeader (String text)
 {
     re.compile("^([\\w\\-]+)\\s*:\\s*(.*)$", "");
 
@@ -176,30 +129,10 @@ HTTP::parseHeader (const std::string& text, bool request)
     return header;
 }
 
-bool
-HTTP::isValidHeader (const std::string& header, bool request)
+String
+HTTP::getHeader (String name)
 {
-    Regex::Strings* checker;
-    if (request) {
-        checker = &RequestHeaders;
-    }
-    else {
-        checker = &ResponseHeaders;
-    }
-
-    for (size_t i = 0; i < checker->size(); i++) {
-        if (_fixCase(header) == checker->at(i)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-std::string
-HTTP::getHeader (const std::string& name)
-{
-    std::string Name = _fixCase(name);
+    String Name = _fixCase(name);
 
     if (_headers.find(Name) != _headers.end()) {
         return _headers[Name];
@@ -210,29 +143,37 @@ HTTP::getHeader (const std::string& name)
 }
 
 void
-HTTP::setHeader (const std::string& name, const std::string& value)
+HTTP::setHeader (String name, String value)
 {
-    std::string Name = _fixCase(name);
-
-    if (isValidHeader(Name, false)) {
-        _headers[Name] = value;
-    }
+    _headers[_fixCase(name)] = value;
 }
 
-std::string
+String
 HTTP::getUri (void)
 {
     return _uri;
 }
 
-std::string
+String
+HTTP::getHost (void)
+{
+    return _host;
+}
+
+String
+HTTP::getMethod (void)
+{
+    return _method;
+}
+
+String
 HTTP::getData (void)
 {
     return _data;
 }
 
 void
-HTTP::setData (const std::string& data)
+HTTP::setData (String data)
 {
     _data = data;
 }
@@ -291,24 +232,25 @@ HTTP::clear (void)
     _headers.clear();
 }
 
-std::string
-HTTP::_fixCase (const std::string& text)
+String
+HTTP::_fixCase (String text)
 {
     bool firstChar = true;
 
-    std::string nText;
+    String nText;
     for (size_t i = 0; i < text.length(); i++) {
         if (firstChar) {
             firstChar = false;
-            nText += std::toupper(text.at(i));
+            nText += String::toUpper(text.at(i));
         }
         else {
             if (!std::isalpha(text.at(i))) {
                 firstChar = true;
             }
-            nText += std::tolower(text.at(i));
+            nText += String::toLower(text.at(i));
         }
     }
+
     return nText;
 }
 
@@ -366,49 +308,6 @@ HTTP::_initStatusCodes (void)
         Codes[503] = "Service Unavailable";
         Codes[504] = "Gateway Timeout";
         Codes[505] = "HTTP Version Not Supported";
-    }
-}
-
-void
-HTTP::_initHeaders (void)
-{
-    if (RequestHeaders.empty()) {
-        RequestHeaders.push_back("Accept");
-        RequestHeaders.push_back("Accept-Charset");
-        RequestHeaders.push_back("Accept-Encoding");
-        RequestHeaders.push_back("Accept-Language");
-        RequestHeaders.push_back("Accept-Ranges");
-        RequestHeaders.push_back("Authorization");
-        RequestHeaders.push_back("Cache-Control");
-        RequestHeaders.push_back("Connection");
-        RequestHeaders.push_back("Cookie");
-        RequestHeaders.push_back("Date");
-        RequestHeaders.push_back("Host");
-        RequestHeaders.push_back("If-Modified-Since");
-        RequestHeaders.push_back("If-None-Match");
-        RequestHeaders.push_back("User-Agent");
-    }
-    
-    if (ResponseHeaders.empty()) {
-        ResponseHeaders.push_back("Accept-Ranges");
-        ResponseHeaders.push_back("Age");
-        ResponseHeaders.push_back("Allow");
-        ResponseHeaders.push_back("Cache-Control");
-        ResponseHeaders.push_back("Content-Encoding");
-        ResponseHeaders.push_back("Content-Language");
-        ResponseHeaders.push_back("Content-Length");
-        ResponseHeaders.push_back("Content-Location");
-        ResponseHeaders.push_back("Content-Disposition");
-        ResponseHeaders.push_back("Content-MD5");
-        ResponseHeaders.push_back("Content-Range");
-        ResponseHeaders.push_back("Content-Type");
-        ResponseHeaders.push_back("Date");
-        ResponseHeaders.push_back("ETag");
-        ResponseHeaders.push_back("Expires");
-        ResponseHeaders.push_back("Last-Modified");
-        ResponseHeaders.push_back("Location");
-        ResponseHeaders.push_back("Server");
-        ResponseHeaders.push_back("Set-Cookie");
     }
 }
 

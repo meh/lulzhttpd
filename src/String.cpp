@@ -42,6 +42,12 @@ String::String (const double number)
     _string = String::toString(number);
 }
 
+char
+String::at (size_t index)
+{
+    return _string.at(index);
+}
+
 void
 String::append (String& string)
 {
@@ -49,12 +55,9 @@ String::append (String& string)
 }
 
 void
-String::append (char string)
+String::append (const char string)
 {
-    std::stringstream tmp;
-    tmp << string;
-
-    _string += tmp.str();
+    _string.append(1, string);
 }
 
 void
@@ -235,6 +238,38 @@ String::toString (const double number)
     return string.str();
 }
 
+char
+String::toUpper (const char string)
+{
+    return std::toupper(string);
+}
+
+String
+String::toUpper (String string)
+{
+    String text;
+    for (size_t i = 0; i < string.length(); i++) {
+        text += String::toUpper(string.at(i));
+    }
+    return text;
+}
+
+char
+String::toLower (const char string)
+{
+    return std::tolower(string);
+}
+
+String
+String::toLower (String string)
+{
+    String text;
+    for (size_t i = 0; i < string.length(); i++) {
+        text += String::toLower(string.at(i));
+    }
+    return text;
+}
+
 String
 String::operator += (String string)
 {
@@ -244,7 +279,7 @@ String::operator += (String string)
 }
 
 String
-String::operator += (char string)
+String::operator += (const char string)
 {
     this->append(string);
 
@@ -362,6 +397,72 @@ String::operator + (double number)
     return *this;
 }
 
+bool
+String::operator == (const char* other)
+{
+    return _string == other;
+}
+
+bool
+String::operator == (const std::string& other)
+{
+    return _string == other;
+}
+
+bool
+String::operator == (String& other)
+{
+    return _string == other.toString();
+}
+
+bool
+String::operator != (const char* other)
+{
+    return _string != other;
+}
+
+bool
+String::operator != (const std::string& other)
+{
+    return _string != other;
+}
+
+bool
+String::operator != (String& other)
+{
+    return _string != other.toString();
+}
+
+String::operator int (void)
+{
+    return this->toInt();
+}
+
+String::operator long (void)
+{
+    return this->toLong();
+}
+
+String::operator long long (void)
+{
+    return this->toLongLong();
+}
+
+String::operator double (void)
+{
+    return this->toDouble();
+}
+
+String::operator char* (void)
+{
+    return (char*) this->toChars();
+}
+
+String::operator std::string (void)
+{
+    return std::string(this->toString());
+}
+
 std::ostream&
 operator << (std::ostream& out, String string)
 {
@@ -376,18 +477,10 @@ operator >> (std::istream& in, String string)
     return in;
 }
 
-int operator ^= (String& string, String& regex)
+std::stringstream&
+operator << (std::stringstream& stream, String string)
 {
-    Regex::Match(regex.toString(), string.toString());
-}
-
-int operator ^= (String& string, const char* regex)
-{
-    Regex::Match(regex, string.toString());
-}
-
-int operator ^= (String& string, const std::string& regex)
-{
-    Regex::Match(regex, string.toString());
+    stream << string.toChars();
+    return stream;
 }
 
