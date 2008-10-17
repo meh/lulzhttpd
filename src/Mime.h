@@ -16,20 +16,21 @@
 * along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
 ****************************************************************************/
 
-#if !defined(LULZHTTPD_SYSTEM_H)
-#define LULZHTTPD_SYSTEM_H
+#if !defined(LULZHTTPD_MIME_H)
+#define LULZHTTPD_MIME_H
 
 #include "common.h"
 
 namespace lulzHTTPd {
 
-namespace System {
+class Mime
+{
+  protected:
+    Mime (void);
 
-String readFile (String fileName);
-String normalizePath (String path);
-String getExtension (String file);
-
-}
+  public:
+    static String getType (String extension);
+};
 
 }
 

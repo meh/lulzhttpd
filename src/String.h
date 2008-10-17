@@ -66,10 +66,13 @@ class String
 
   public:
     String (void);
+    String (const char string);
     String (const char* string);
     String (const std::string& string);
-    String (int number);
-    String (double number);
+    String (const size_t number);
+    String (const int number);
+    String (const long number);
+    String (const double number);
 
     char at (size_t index);
 
@@ -95,12 +98,13 @@ class String
 
     const char* toChars (void);
     static const char* toChars (const std::string& string);
-    static const char* toChars (int number);
-    static const char* toChars (long number);
-    static const char* toChars (double number);
+    static const char* toChars (const int number);
+    static const char* toChars (const long number);
+    static const char* toChars (const double number);
 
     std::string toString (void);
-    std::string toString (const char* string);
+    static std::string toString (const char* string);
+    static std::string toString (const size_t number);
     static std::string toString (const int number);
     static std::string toString (const long number);
     static std::string toString (const double number);
@@ -116,5 +120,13 @@ class String
   protected:
     std::string _string;
 };
+
+String operator + (const char text, String string);
+String operator + (const char* text, String string);
+String operator + (const std::string& text, String string);
+String operator + (const size_t number, String string);
+String operator + (const int number, String string);
+String operator + (const long number, String string);
+String operator + (const double number, String string);
 
 #endif

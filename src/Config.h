@@ -28,17 +28,21 @@ namespace lulzHTTPd {
 
 class Config
 {
+  protected:
+    Config (void);
+
   public:
     static void init (String configFile, String configType) throw();
-    static void load (xmlpp::DOM::Document* config);
 
     static String get (String attr);
 
     static bool test (String& configFile);
     static String testLog (void);
 
-  protected:
-    Config (void);
+  private:
+    static xmlpp::DOM::Document* _parse (xmlpp::DOM::Document* doc);
+    static void _fixElement (xmlpp::DOM::Element* element);
+    static String _fixPath (String path);
 
   private:
     static bool _inited;

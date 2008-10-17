@@ -49,6 +49,17 @@ String normalizePath (String path)
     return path &= "s/\\.*\\/*//";
 }
 
+String getExtension (String file)
+{
+    Regex re("/\\.(\\w+)$/");
+    if (re.match(file)) {
+        return re.group(1);
+    }
+    else {
+        return "";
+    }
+}
+
 }
 
 }

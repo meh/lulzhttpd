@@ -1,10 +1,13 @@
 C++  = g++ -g ;
 LINK = $(C++) ;
 
-Main LOLd : src/main.cpp src/Config.cpp src/Server.cpp src/Client.cpp src/HTTP.cpp src/Parser.cpp
+Main LOLd : src/main.cpp src/Config.cpp src/Server.cpp src/Client.cpp src/HTTP.cpp src/Parser.cpp src/Mime.cpp
             src/Regex.cpp src/String.cpp src/Exception.cpp src/Socket.cpp src/System.cpp ;
 
 LINKLIBS on LOLd = -lpcre -lpthread -lxmlpp ;
 
 InstallBin $(BINDIR) : LOLd$(SUFEXE) ;
+
+InstallFile $(CONFDIR) : data/lulzhttpd.conf ;
+InstallFile $(CONFDIR)/includes : data/mime-types.conf ;
 

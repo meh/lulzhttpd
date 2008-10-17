@@ -42,19 +42,35 @@ Client::start (void)
     HTTP* response = new HTTP;
     if (request->isOk()) {
         try {
-            response->setData(System::readFile(request->getUri()));
+            response->setData(System::readFile(
+                Config::get("directories->document[path]")+System::normalizePath(request->getUri())
+            ));
 
             response->setStatus(200);
             response->setVersion(request->getVersion());
 
             response->setHeader("Connection", "close");
-            response->setHeader("Content-Type", "text/plain");
+            response->setHeader("Content-Type", Mime::getType(System::getExtension(request->getUri())));
             response->setHeader("Content-Length", response->getData().length());
             response->setHeader("Server", "lulzHTTPd/0.1");
 
             _socket->send(response->get());
         }
         catch (Exception e) {
+            std::stringstream resp;
+            resp << "WUT, ARE YOU BLIND? :O" << std::endl;
+
+            response->setStatus(404);
+            response->setVersion(request->getVersion());
+
+            response->setHeader("Connection", "close");
+            response->setHeader("Content-Type", "text/plain");
+            response->setHeader("Content-Length", String((int)resp.str().length()).toString());
+            response->setHeader("Server", "lulzHTTPd/0.1");
+
+            response->setData(resp.str());
+
+            _socket->send(response->get());
         }
     }
     else {

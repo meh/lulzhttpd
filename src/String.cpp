@@ -22,6 +22,11 @@ String::String (void)
     _string = "";
 }
 
+String::String (const char string)
+{
+    _string = std::string(1, string);
+}
+
 String::String (const char* string)
 {
     _string = string;
@@ -32,7 +37,17 @@ String::String (const std::string& string)
     _string = string;
 }
 
+String::String (const size_t number)
+{
+    _string = String::toString(number);
+}
+
 String::String (const int number)
+{
+    _string = String::toString(number);
+}
+
+String::String (const long number)
 {
     _string = String::toString(number);
 }
@@ -177,6 +192,15 @@ std::string
 String::toString (void)
 {
     return _string;
+}
+
+std::string
+String::toString (const size_t number)
+{
+    std::stringstream string;
+    string << number;
+
+    return string.str();
 }
 
 std::string
@@ -359,6 +383,48 @@ String::operator + (double number)
     this->append(number);
 
     return *this;
+}
+
+String
+operator + (const char text, String string)
+{
+    return String(text)+string;
+}
+
+String
+operator + (const char* text, String string)
+{
+    return String(text)+string;
+}
+
+String
+operator + (const std::string& text, String string)
+{
+    return String(text)+string;
+}
+
+String
+operator + (const size_t number, String string)
+{
+    return String(number)+string;
+}
+
+String
+operator + (const int number, String string)
+{
+    return String(number)+string;
+}
+
+String
+operator + (const long number, String string)
+{
+    return String(number)+string;
+}
+
+String
+operator + (const double number, String string)
+{
+    return String(number)+string;
 }
 
 bool

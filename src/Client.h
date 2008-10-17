@@ -22,6 +22,7 @@
 #include "common.h"
 #include "Socket.h"
 #include "HTTP.h"
+#include "Mime.h"
 
 namespace lulzHTTPd {
 

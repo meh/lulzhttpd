@@ -16,62 +16,27 @@
 * along with lulzHTTPd.  If not, see <http://www.gnu.org/licenses/>.        *
 ****************************************************************************/
 
-#include "Server.h"
+#include "Mime.h"
 
 namespace lulzHTTPd {
 
-bool Server::_inited;
-int Server::_highestSocket;
-
-void* createClient (void* arg)
+Mime::Mime (void)
 {
-    Client* client = new Client((System::Socket*) arg);
-    client->start();
-    delete client;
-
-    pthread_exit(NULL);
 }
 
-void
-Server::init (String configFile, String configType)
+String
+Mime::getType (String extension)
 {
-    if (!_inited) {
-        _inited = true;
+    int i = 0;
+    while (!Config::get("mime-types->mime["+String(i)+"][extension]").empty()) {
+        if (Config::get("mime-types->mime["+String(i)+"][extension]") == extension) {
+            return Config::get("mime-types->mime["+String(i)+"][type]");
+        }
 
-        Config::init(configFile, configType);
-    }
-}
-
-void
-Server::start (void)
-{
-    if (!_inited) {
-        throw Exception(Exception::SERVER_NOT_INITED);
+        i++;
     }
 
-    // --- Modules etc, all the stuff that has to be done.
-    
-    // Modules bla bla ---
-    
-    String host = Config::get("general->connection->host").empty()
-                      ? "127.0.0.1"
-                      : Config::get("general->connection->host");
-
-    int port = Config::get("general->connection->port").empty()
-                   ? 80
-                   : Config::get("general->port").toInt();
-
-    int maxConnections = Config::get("general->port-max-connections").empty()
-                             ? 250
-                             : Config::get("general->port-max-connections").toInt();
-
-    System::Socket* sock = new System::Socket(host, port, maxConnections);
-
-    while (1) {
-        pthread_t thread;
-        pthread_create(&thread, NULL, createClient, sock->accept());
-        pthread_detach(thread);
-    }
+    return Config::get("mime-types[default]");
 }
 
 }
