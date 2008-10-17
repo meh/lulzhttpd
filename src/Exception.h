@@ -37,7 +37,8 @@ class Exception : public std::exception
     static const int SOCKET_CLOSE           = 207;
     static const int SOCKET_ERROR_SET_BLOCK = 208;
 
-    static const int CONFIG_PARSE_ERROR = 400;
+    static const int CONFIG_PARSE_ERROR        = 400;
+    static const int CONFIG_FILE_NOT_SUPPORTED = 401;
 
     static const int FILE_NOT_FOUND = 500;
 
@@ -51,6 +52,6 @@ class Exception : public std::exception
     String _description;
 };
 
-};
+}
 
 #endif

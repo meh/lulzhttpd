@@ -78,11 +78,6 @@ String::append (const long number)
     _string += String::toString(number);
 }
 
-void String::append (const long long number)
-{
-    _string += String::toString(number);
-}
-
 void
 String::append (const double number)
 {
@@ -136,18 +131,6 @@ String::toLong (const std::string& string)
     return std::atol(String::toChars(string));
 }
 
-long long
-String::toLongLong (void)
-{
-    return std::atoll(String::toChars(_string));
-}
-
-long long
-String::toLongLong (const std::string& string)
-{
-    return std::atoll(String::toChars(string));
-}
-
 double
 String::toDouble (void)
 {
@@ -185,12 +168,6 @@ String::toChars (const long number)
 }
 
 const char*
-String::toChars (const long long number)
-{
-    return String::toChars(String::toString(number));
-}
-
-const char*
 String::toChars (const double number)
 {
     return String::toChars(String::toString(number));
@@ -221,7 +198,7 @@ String::toString (const long number)
 }
 
 std::string
-String::toString (const long long number)
+String::toString (const double number)
 {
     std::stringstream string;
     string << number;
@@ -229,13 +206,10 @@ String::toString (const long long number)
     return string.str();
 }
 
-std::string
-String::toString (const double number)
+String
+String::toUpper (void)
 {
-    std::stringstream string;
-    string << number;
-
-    return string.str();
+    return String::toUpper(_string);
 }
 
 char
@@ -252,6 +226,12 @@ String::toUpper (String string)
         text += String::toUpper(string.at(i));
     }
     return text;
+}
+
+String
+String::toLower (void)
+{
+    return String::toLower(_string);
 }
 
 char
@@ -317,14 +297,6 @@ String::operator += (long number)
 }
 
 String
-String::operator += (long long number)
-{
-    this->append(number);
-
-    return *this;
-}
-
-String
 String::operator += (double number)
 {
     this->append(number);
@@ -375,14 +347,6 @@ String::operator + (int number)
 
 String
 String::operator + (long number)
-{
-    this->append(number);
-
-    return *this;
-}
-
-String
-String::operator + (long long number)
 {
     this->append(number);
 
@@ -441,11 +405,6 @@ String::operator int (void)
 String::operator long (void)
 {
     return this->toLong();
-}
-
-String::operator long long (void)
-{
-    return this->toLongLong();
 }
 
 String::operator double (void)

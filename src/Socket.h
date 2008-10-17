@@ -79,9 +79,9 @@ class Socket
     struct sockaddr _initAddr (in_addr_t addr, int port);
 };
 
-};
+}
 
-};
+}
 
 #endif
 

@@ -243,7 +243,7 @@ Socket::_initAddr (in_addr_t addr, int port)
     return *(struct sockaddr*) &nAddr;
 }
 
-};
+}
 
-};
+}
 

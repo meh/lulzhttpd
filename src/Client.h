@@ -37,6 +37,6 @@ class Client
     System::Socket* _socket;
 };
 
-};
+}
 
 #endif

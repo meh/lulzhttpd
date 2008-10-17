@@ -30,7 +30,7 @@ namespace lulzHTTPd {
 class Server
 {
   public:
-    static void init (String& config);
+    static void init (String configFile, String configType);
     static void start (void);
 
   protected:
@@ -42,6 +42,6 @@ class Server
     static int _highestSocket;
 };
 
-};
+}
 
 #endif

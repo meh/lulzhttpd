@@ -20,28 +20,34 @@
 #define LULZHTTPD_CONFIG_H
 
 #include "common.h"
+
 #include "Parser.h"
+#include <xml++/DOM.h>
 
 namespace lulzHTTPd {
 
 class Config
 {
   public:
-    static void init (String& configFile) throw();
-    static void load (DOM::Document* config);
+    static void init (String configFile, String configType) throw();
+    static void load (xmlpp::DOM::Document* config);
+
+    static String get (String attr);
 
     static bool test (String& configFile);
     static String testLog (void);
 
   protected:
-    Config (String& configFile);
+    Config (void);
 
   private:
     static bool _inited;
 
     static String _t_log;
+
+    static xmlpp::DOM::Document* _doc;
 };
 
-};
+}
 
 #endif

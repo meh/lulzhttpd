@@ -33,12 +33,12 @@ void* createClient (void* arg)
 }
 
 void
-Server::init (String& config)
+Server::init (String configFile, String configType)
 {
     if (!_inited) {
         _inited = true;
 
-        Config::init(config);
+        Config::init(configFile, configType);
     }
 }
 
@@ -48,6 +48,8 @@ Server::start (void)
     if (!_inited) {
         throw Exception(Exception::SERVER_NOT_INITED);
     }
+
+    std::cerr << Config::get("directories->document[path]") << std::endl;
 
     // --- Modules etc, all the stuff that has to be done.
     
@@ -62,5 +64,5 @@ Server::start (void)
     }
 }
 
-};
+}
 

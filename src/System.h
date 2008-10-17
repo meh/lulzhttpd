@@ -28,8 +28,8 @@ namespace System {
 String readFile (String fileName);
 String normalizedPath (String path);
 
-};
+}
 
-};
+}
 
 #endif

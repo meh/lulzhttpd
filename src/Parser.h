@@ -19,8 +19,29 @@
 #if !defined(LULZHTTPD_PARSER_H)
 #define LULZHTTPD_PARSER_H
 
+#include "common.h"
+
 #include <xml++/xml++.h>
-using namespace xmlpp;
+
+namespace lulzHTTPd {
+
+class Parser
+{
+  public:
+    typedef enum { none, lulzhttpd, apache, lighttpd } ConfType;
+
+  protected:
+    Parser (void);
+
+  public:
+    static xmlpp::DOM::Document* load (String configFile, ConfType configType);
+
+    static ConfType parseConfType (String configType);
+
+  private:
+    static ConfType _recognize (String text);
+};
+
+}
 
 #endif
-

@@ -78,5 +78,5 @@ Client::start (void)
     delete response;
 }
 
-};
+}
 

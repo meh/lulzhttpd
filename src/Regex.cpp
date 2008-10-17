@@ -395,7 +395,7 @@ Regex::_parseSub (const std::string& sub)
     data["replace"] = re[2];
 
     return data;
-};
+}
 
 pcre*
 Regex::_clonePCRE (pcre* re)

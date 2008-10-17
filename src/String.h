@@ -36,7 +36,6 @@ class String
   public:
     operator int (void);
     operator long (void);
-    operator long long (void);
     operator double (void);
     operator char* (void);
     operator std::string (void);
@@ -47,7 +46,6 @@ class String
     String operator += (std::string string);
     String operator += (int number);
     String operator += (long number);
-    String operator += (long long number);
     String operator += (double number);
 
     String operator + (String string);
@@ -56,7 +54,6 @@ class String
     String operator + (std::string string);
     String operator + (int number);
     String operator + (long number);
-    String operator + (long long number);
     String operator + (double number);
 
     bool operator == (const char* other);
@@ -81,7 +78,6 @@ class String
     void append (const std::string& string);
     void append (const int number);
     void append (const long number);
-    void append (const long long number);
     void append (const double number);
 
     String substr (int offset, int end = -1);
@@ -94,9 +90,6 @@ class String
     long toLong (void);
     static long toLong (const std::string& string);
 
-    long long toLongLong (void);
-    static long long toLongLong (const std::string& string);
-
     double toDouble (void);
     static double toDouble (const std::string& string);
 
@@ -104,19 +97,19 @@ class String
     static const char* toChars (const std::string& string);
     static const char* toChars (int number);
     static const char* toChars (long number);
-    static const char* toChars (long long number);
     static const char* toChars (double number);
 
     std::string toString (void);
     std::string toString (const char* string);
     static std::string toString (const int number);
     static std::string toString (const long number);
-    static std::string toString (const long long number);
     static std::string toString (const double number);
 
+    String toUpper (void);
     static char toUpper (const char string);
     static String toUpper (String string);
 
+    String toLower (void);
     static char toLower (const char string);
     static String toLower (String string);
 

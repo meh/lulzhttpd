@@ -33,9 +33,10 @@ int main (int argc, char *argv[])
 
     bool testConfig   = false;
     String configFile = "/etc/lulzhttpd/lulz.conf";
+    String configType = "none";
 
     int cmd;
-    while ((cmd = getopt(argc, argv, "f:m:hvVDpt")) != -1) {
+    while ((cmd = getopt(argc, argv, "f:m:c:hvVDpt")) != -1) {
         switch (cmd) {
         case 'h':
         std::cout << showHelp() << std::endl;
@@ -44,6 +45,10 @@ int main (int argc, char *argv[])
 
         case 'f':
         configFile = optarg;
+        break;
+
+        case 'c':
+        configType = optarg;
         break;
 
         case 't':
@@ -79,7 +84,7 @@ int main (int argc, char *argv[])
     }
 
     try {
-        lulzHTTPd::Server::init(configFile);
+        lulzHTTPd::Server::init(configFile, configType);
         lulzHTTPd::Server::start();
     }
     catch (lulzHTTPd::Exception e) {

@@ -49,7 +49,7 @@ String normalizePath (String path)
     return path &= "s/\\.*\\/*//";
 }
 
-};
+}
 
-};
+}
 

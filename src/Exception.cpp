@@ -71,5 +71,5 @@ Exception::what (void) throw()
     return _description.toChars();
 }
 
-};
+}
 
