@@ -68,7 +68,7 @@ Server::start (void)
     System::Socket* sock = new System::Socket(host, port, maxConnections);
 
     while (1) {
-        pthread_t thread;
+        pthread_t thread = 0;
         pthread_create(&thread, NULL, createClient, sock->accept());
         pthread_detach(thread);
     }

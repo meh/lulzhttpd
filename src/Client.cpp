@@ -65,7 +65,7 @@ Client::start (void)
 
             response->setHeader("Connection", "close");
             response->setHeader("Content-Type", "text/plain");
-            response->setHeader("Content-Length", String((int)resp.str().length()).toString());
+            response->setHeader("Content-Length", resp.str().length());
             response->setHeader("Server", "lulzHTTPd/0.1");
 
             response->setData(resp.str());
@@ -82,7 +82,7 @@ Client::start (void)
 
         response->setHeader("Connection", "close");
         response->setHeader("Content-Type", "text/plain");
-        response->setHeader("Content-Length", String((int)resp.str().length()).toString());
+        response->setHeader("Content-Length", resp.str().length());
         response->setHeader("Server", "lulzHTTPd/0.1");
 
         response->setData(resp.str());

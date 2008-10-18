@@ -30,6 +30,7 @@ Mime::getType (String file)
     int i = 0;
     String ext;
     while (!(ext = Config::get("mime-types->mime["+String(i)+"][extension]")).empty()) {
+        ext = Regex::Sub("/\\./\\./g", ext);
         Regex re(("/"+ext+"$/").toString());
         if (re.match(file)) {
             return Config::get("mime-types->mime["+String(i)+"][type]");
