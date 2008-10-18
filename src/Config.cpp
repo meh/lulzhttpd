@@ -33,6 +33,7 @@ Config::init (String configFile, String configType) throw()
         xmlpp::DOM::Document* config = Parser::load(configFile, Parser::parseConfType(configType));
         if (config != NULL) {
             _doc = _parse(config);
+            _doc->normalizeDocument();
         }
         else {
             throw Exception(Exception::CONFIG_PARSE_ERROR);
@@ -44,47 +45,57 @@ String
 Config::get (String attr)
 {
     Regex::Strings parts = Regex::Split("/->/", attr);
+    bool error = false;
     String result;
 
     xmlpp::DOM::Element* actual = _doc->documentElement();
     for (size_t i = 0; i < parts.size(); i++) {
-        xmlpp::DOM::NodeList nodes = actual->getElementsByTagName((parts.at(i) &= "s/\\[.*\\]*$//"));
+        xmlpp::DOM::NodeList nodes = actual->getElementsByTagName((parts.at(i) &= "s/\\[.*\\]$//g"));
 
         if (nodes.length() == 0) {
+            error = true;
             break;
         }
         else if (nodes.length() > 1) {
+            // Get the number in something like thing[3]
             Regex re("/\\[(\\d+)\\]/");
             if (re.match(parts.at(i))) {
-                actual = (xmlpp::DOM::Element*) nodes.item(String(re.group(1)).toInt());
+                int item = String(re.group(1)).toInt();
 
-                re.compile("\\[(.*)\\]$", "");
-                if (re.match(parts.at(i))) {
-                    result = actual->getAttribute(re.group(1));
+                if (item >= nodes.length()) {
+                    error = true;
                     break;
                 }
+
+                actual = (xmlpp::DOM::Element*) nodes.item(item);
+
+            }
+             
+            // If there's an attribute in something like thing[2][attribute]
+            // it gets the attribute.
+            re.compile("\\[([^\\[\\]]*?)\\]$", "");
+            if (re.match(parts.at(i))) {
+                 result = actual->getAttribute(re.group(1));
+                 break;
             }
             else {
                 actual = (xmlpp::DOM::Element*) nodes.item(0);
             }
         }
         else {
+            // Gets the attribute in something like thing[attribute]
             Regex re("/\\[(.*)\\]$/");
             if (re.match(parts.at(i))) {
                 result = ((xmlpp::DOM::Element*)nodes.item(0))->getAttribute(re.group(1));
                 break;
             }
             else {
-                if (nodes.length() == 0) {
-                    break;
-                }
-
                 actual = (xmlpp::DOM::Element*) nodes.item(0);
             }
         }
     }
 
-    if (result.empty()) {
+    if (result.empty() && !error) {
         result = actual->firstChild()->nodeValue();
     }
 
@@ -106,6 +117,7 @@ Config::testLog (void)
 xmlpp::DOM::Document*
 Config::_parse (xmlpp::DOM::Document* doc)
 {
+    _doc = doc;
     _fixElement(doc->documentElement());
 
     xmlpp::XML::Parser parser;
@@ -115,12 +127,12 @@ Config::_parse (xmlpp::DOM::Document* doc)
         xmlpp::DOM::Element* include = (xmlpp::DOM::Element*) includes.item(i);
 
         String path = include->getAttribute("path");
-        path = Config::get("directories->includes[path]")+path;
-
         xmlpp::DOM::Document* includeDoc = parser.load(path);
-        
-        include->parentNode()->appendChild(includeDoc->documentElement()->cloneNode());
-        delete include->parentNode()->removeChild(include);
+       
+        delete include->parentNode()->replaceChild(
+            includeDoc->documentElement()->cloneNode(),
+            include
+        );
         delete includeDoc;
     }
 
@@ -131,12 +143,15 @@ void
 Config::_fixElement (xmlpp::DOM::Element* element)
 {
     for (size_t i = 0; i < element->childNodes().length(); i++) {
-        xmlpp::DOM::Element* ele = (xmlpp::DOM::Element*) element->childNodes().item(i);
-        if (ele->hasAttribute("path")) {
-            ele->setAttribute("path", _fixPath(ele->getAttribute("path")));
-        }
+        xmlpp::DOM::Node* node = element->childNodes().item(i);
 
-        _fixElement(ele);
+        if (node->nodeType() == xmlpp::DOM::Node::ELEMENT_NODE) {
+            xmlpp::DOM::Element* ele = (xmlpp::DOM::Element*) node;
+            if (ele->hasAttribute("path")) {
+                ele->setAttribute("path", _fixPath(ele->getAttribute("path")));
+            }
+            _fixElement(ele);
+        }
     }
 }
 

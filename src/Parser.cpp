@@ -52,7 +52,6 @@ Parser::load (String configFile, ConfType configType)
         } break;
     }
 
-    document->normalizeDocument();
     return document;
 }
 

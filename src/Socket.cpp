@@ -22,7 +22,7 @@ namespace lulzHTTPd {
 
 namespace System {
 
-Socket::Socket (const String& address, int port, int maxConnections)
+Socket::Socket (String address, int port, int maxConnections)
 {
     _reuse = 0;
 
@@ -122,13 +122,13 @@ Socket::operator << (const char* string)
 }
 
 Socket&
-Socket::operator << (const std::string& string)
+Socket::operator << (std::string string)
 {
     this->send(String(string));
 }
 
 Socket&
-Socket::operator << (const String& string)
+Socket::operator << (String string)
 {
     this->send(string);
 }
@@ -157,9 +157,9 @@ Socket::operator int (void)
 }
 
 void
-Socket::_bind (const String& addr, int port)
+Socket::_bind (String addr, int port)
 {
-    in_addr_t nAddr = this->_toIPv4((String&) addr);
+    in_addr_t nAddr = this->_toIPv4(addr);
 
     if (nAddr == INADDR_NONE) {
         throw Exception(Exception::SOCKET_BIND);
@@ -190,16 +190,16 @@ Socket::setBlocking (bool blocking)
 }
 
 in_addr_t
-Socket::_toIPv4 (String& addr)
+Socket::_toIPv4 (String addr)
 {
     in_addr_t nAddr;
 
     if (this->_isValidIPv4(addr)) {
-        nAddr = System::inet_addr(addr.toChars());
+        nAddr = System::inet_addr(addr);
     }
     else {
         hostent *he;
-        he = System::gethostbyname(addr.toChars());
+        he = System::gethostbyname(addr);
 
         if (he == NULL) {
             nAddr = INADDR_NONE;
@@ -213,13 +213,13 @@ Socket::_toIPv4 (String& addr)
 }
 
 bool
-Socket::_isValidIPv4 (String& addr)
+Socket::_isValidIPv4 (String addr)
 {
-    Regex ip("/^((\\d+)\\.){3}(\\d+)$/");
+    Regex ip("/^(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)$/");
 
-    if (ip.match(addr.toString())) {
-        for (int i = 0; i < 4; i++) {
-            if (String(ip.group(i+1)).toInt() > 255) {
+    if (ip.match(addr)) {
+        for (int i = 1; i < 5; i++) {
+            if (String(ip.group(i)).toInt() > 255) {
                 return false;
             }
         }

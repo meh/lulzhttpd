@@ -25,11 +25,13 @@ Mime::Mime (void)
 }
 
 String
-Mime::getType (String extension)
+Mime::getType (String file)
 {
     int i = 0;
-    while (!Config::get("mime-types->mime["+String(i)+"][extension]").empty()) {
-        if (Config::get("mime-types->mime["+String(i)+"][extension]") == extension) {
+    String ext;
+    while (!(ext = Config::get("mime-types->mime["+String(i)+"][extension]")).empty()) {
+        Regex re(("/"+ext+"$/").toString());
+        if (re.match(file)) {
             return Config::get("mime-types->mime["+String(i)+"][type]");
         }
 

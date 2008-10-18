@@ -29,7 +29,7 @@ class Mime
     Mime (void);
 
   public:
-    static String getType (String extension);
+    static String getType (String file);
 };
 
 }

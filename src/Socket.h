@@ -39,7 +39,7 @@ class Socket
     static const int RECV_BUFSIZ = 1024;
 
   public:
-    Socket (const String& address, int port, int maxConnections);
+    Socket (String address, int port, int maxConnections);
     Socket (const Socket& socket);
 
     ~Socket (void);
@@ -59,8 +59,8 @@ class Socket
     operator int (void);
 
     Socket& operator << (const char* string);
-    Socket& operator << (const std::string& string);
-    Socket& operator << (const String& string);
+    Socket& operator << (std::string string);
+    Socket& operator << (String string);
 
     Socket& operator >> (char* buffer);
     Socket& operator >> (std::string buffer);
@@ -71,11 +71,11 @@ class Socket
     int _reuse;
 
   private:
-    void _bind (const String& addr, int port);
+    void _bind (String addr, int port);
     void _listen (int maxConnections);
 
-    in_addr_t _toIPv4 (String& addr);
-    bool _isValidIPv4 (String& addr);
+    in_addr_t _toIPv4 (String addr);
+    bool _isValidIPv4 (String addr);
     struct sockaddr _initAddr (in_addr_t addr, int port);
 };
 

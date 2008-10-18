@@ -27,7 +27,6 @@ namespace System {
 
 String readFile (String fileName);
 String normalizePath (String path);
-String getExtension (String file);
 
 }
 

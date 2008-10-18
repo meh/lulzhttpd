@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
     bool daemonize = true;
 
     bool testConfig   = false;
-    String configFile = "/etc/lulzhttpd/lulz.conf";
+    String configFile = "/etc/lulzhttpd/lulzhttpd.conf";
     String configType = "none";
 
     int cmd;

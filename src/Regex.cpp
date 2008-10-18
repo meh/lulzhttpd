@@ -327,13 +327,18 @@ Regex::split (const std::string& string)
 {
     Strings splitted;
 
-    Regex re("/(.*?)"+_regex+"/xgms");
-    while (re.match(string)) {
-        splitted.push_back(re.group(1));
+    if (this->match(string)) {
+        Regex re("/(.*?)"+_regex+"/xgms");
+        while (re.match(string)) {
+            splitted.push_back(re.group(1));
+        }
+        re.compile("("+_regex+".*?)*"+_regex+"(.*)", "xms");
+        re.match(string);
+        splitted.push_back(re.group(2));
     }
-    re.compile("("+_regex+".*?)*"+_regex+"(.*)", "xms");
-    re.match(string);
-    splitted.push_back(re.group(2));
+    else {
+        splitted.push_back(string);
+    }
 
     return splitted;
 }

@@ -50,7 +50,7 @@ Client::start (void)
             response->setVersion(request->getVersion());
 
             response->setHeader("Connection", "close");
-            response->setHeader("Content-Type", Mime::getType(System::getExtension(request->getUri())));
+            response->setHeader("Content-Type", Mime::getType(request->getUri()));
             response->setHeader("Content-Length", response->getData().length());
             response->setHeader("Server", "lulzHTTPd/0.1");
 

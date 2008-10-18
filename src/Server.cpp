@@ -54,9 +54,9 @@ Server::start (void)
     // Modules bla bla ---
     
     String host = Config::get("general->connection->host").empty()
-                      ? "127.0.0.1"
+                      ? "0.0.0.0"
                       : Config::get("general->connection->host");
-
+    
     int port = Config::get("general->connection->port").empty()
                    ? 80
                    : Config::get("general->port").toInt();
@@ -72,6 +72,8 @@ Server::start (void)
         pthread_create(&thread, NULL, createClient, sock->accept());
         pthread_detach(thread);
     }
+
+    delete sock;
 }
 
 }
