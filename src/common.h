@@ -19,6 +19,7 @@
 #if !defined(LULZHTTPD_COMMON_H)
 #define LULZHTTPD_COMMON_H
 
+#include <exception>
 #include <iostream>
 #include <iomanip>
 
@@ -28,6 +29,7 @@
 #include "Exception.h"
 
 #include "System.h"
+#include "Log.h"
 
 #include "Config.h"
 

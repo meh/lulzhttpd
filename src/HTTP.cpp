@@ -40,7 +40,7 @@ HTTP::request (String text)
             _version = std::atof(re.group(3).c_str());
         }
         else {
-            setError(400);
+            HTTPError(400);
             return;
         }
     }
@@ -67,7 +67,7 @@ HTTP::request (String text)
 
             if (_version >= 1.1) {
                 if (_headers.find("Host") == _headers.end()) {
-                    setError(400);
+                    HTTPError(400);
                     return;
                 }
             }

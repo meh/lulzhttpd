@@ -26,17 +26,11 @@
 
 namespace lulzHTTPd {
 
-class Client
+namespace Client
 {
-  public:
-    Client (System::Socket* sock);
-    ~Client (void);
+    void start (System::Socket* sock);
 
-    void start (void);
-
-  private:
-    System::Socket* _socket;
-};
+}
 
 }
 

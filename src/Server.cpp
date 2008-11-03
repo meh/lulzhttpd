@@ -25,10 +25,7 @@ int Server::_highestSocket;
 
 void* createClient (void* arg)
 {
-    Client* client = new Client((System::Socket*) arg);
-    client->start();
-    delete client;
-
+    Client::start((System::Socket*) arg);
     pthread_exit(NULL);
 }
 
@@ -50,7 +47,6 @@ Server::start (void)
     }
 
     // --- Modules etc, all the stuff that has to be done.
-    
     // Modules bla bla ---
     
     String host = Config::get("general->connection->host").empty()
@@ -70,7 +66,7 @@ Server::start (void)
     while (1) {
         pthread_t thread = 0;
         pthread_create(&thread, NULL, createClient, sock->accept());
-        pthread_detach(thread);
+        pthread_join(thread, NULL);
     }
 
     delete sock;

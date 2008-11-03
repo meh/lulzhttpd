@@ -23,6 +23,10 @@ namespace lulzHTTPd {
 Exception::Exception (int code)
 {
     switch (code) {
+        case SERVER_NOT_INITED:
+        _description = "The server has not been initialized.";
+        break;
+
         case SOCKET_CREATION:
         _description = "socket() failed.";
         break;

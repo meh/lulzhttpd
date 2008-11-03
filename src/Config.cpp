@@ -30,7 +30,14 @@ Config::init (String configFile, String configType) throw()
     if (!_inited) {
         _inited = true;
 
-        xmlpp::DOM::Document* config = Parser::load(configFile, Parser::parseConfType(configType));
+        xmlpp::DOM::Document* config;
+        try {
+             config = Parser::load(configFile, Parser::parseConfType(configType));
+        }
+        catch (std::exception e) {
+            throw Exception(Exception::CONFIG_FILE_NOT_FOUND);
+        }
+
         if (config != NULL) {
             _doc = _parse(config);
             _doc->normalizeDocument();
@@ -127,13 +134,19 @@ Config::_parse (xmlpp::DOM::Document* doc)
         xmlpp::DOM::Element* include = (xmlpp::DOM::Element*) includes.item(i);
 
         String path = include->getAttribute("path");
-        xmlpp::DOM::Document* includeDoc = parser.load(path);
+
+        try {
+            xmlpp::DOM::Document* includeDoc = parser.load(path);
        
-        delete include->parentNode()->replaceChild(
-            includeDoc->documentElement()->cloneNode(),
-            include
-        );
-        delete includeDoc;
+            delete include->parentNode()->replaceChild(
+                includeDoc->documentElement()->cloneNode(),
+                include
+            );
+            delete includeDoc;
+        }
+        catch (std::exception e) {
+            System::Log::error("Could not include "+path);
+        }
     }
 
     return doc;

@@ -39,6 +39,7 @@ class Exception : public std::exception
 
     static const int CONFIG_PARSE_ERROR        = 400;
     static const int CONFIG_FILE_NOT_SUPPORTED = 401;
+    static const int CONFIG_FILE_NOT_FOUND     = 404;
 
     static const int FILE_NOT_FOUND = 500;
 

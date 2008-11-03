@@ -20,7 +20,7 @@
 
 #include "common.h"
 
-#define setError(n) \
+#define HTTPError(n) \
     _status = n;\
     _isOk   = false;\
     _done   = true;

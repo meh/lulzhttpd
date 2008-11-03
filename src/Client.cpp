@@ -20,22 +20,12 @@
 
 namespace lulzHTTPd {
 
-Client::Client (System::Socket* socket)
-{
-    _socket = socket;
-}
-
-Client::~Client (void)
-{
-    delete _socket;
-}
-
 void
-Client::start (void)
+Client::start (System::Socket* socket)
 {
     HTTP* request = new HTTP;
     while (!request->done()) {
-        std::string string = _socket->readLine().toString();
+        std::string string = socket->readLine().toString();
         request->request(string);
     }
 
@@ -54,7 +44,7 @@ Client::start (void)
             response->setHeader("Content-Length", response->getData().length());
             response->setHeader("Server", "lulzHTTPd/0.1");
 
-            _socket->send(response->get());
+            socket->send(response->get());
         }
         catch (Exception e) {
             std::stringstream resp;
@@ -70,7 +60,7 @@ Client::start (void)
 
             response->setData(resp.str());
 
-            _socket->send(response->get());
+            socket->send(response->get());
         }
     }
     else {
@@ -87,11 +77,12 @@ Client::start (void)
 
         response->setData(resp.str());
 
-        _socket->send(response->get());
+        socket->send(response->get());
     }
 
     delete request;
     delete response;
+    delete socket;
 }
 
 }
