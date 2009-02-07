@@ -294,6 +294,7 @@ String
 String::operator += (const char* string)
 {
     this->append(string);
+    return *this;
 }
 
 String
